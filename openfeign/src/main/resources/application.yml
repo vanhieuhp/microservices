@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: openfeign
+
+feign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full
+compression:
+  request:
+    enabled: true
+  response:
+    enabled: true
+
+resilience4j.circuitbreaker:
+  instances:
+    jsonplaceholder:
+      slidingWindowSize: 5
+      failureRateThreshold: 5
+      waitDurationInOpenState: 10000
+
+
+
