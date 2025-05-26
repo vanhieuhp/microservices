@@ -1,6 +1,28 @@
+server:
+  port: 8080
+
 spring:
   application:
     name: openfeign
+  datasource:
+    url: jdbc:mysql://localhost:3306/microservices?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    driverClassName: com.mysql.cj.jdbc.Driver
+    username: root
+    password: password
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect  # Use MySQL8Dialect if you're on MySQL 8.x
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    url: jdbc:mysql://localhost:3306/microservices?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    user: root
+    password: password
+    schemas: microservices
+    locations: classpath:db/migration
 
 feign:
   client:

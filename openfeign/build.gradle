@@ -25,27 +25,30 @@ repositories {
 }
 
 ext {
-    set('springCloudVersion', "2025.0.0-RC1")
+    set('springCloudVersion', "2024.0.1")
 }
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign")
     implementation 'io.github.openfeign:feign-okhttp:13.6'
     implementation 'io.github.openfeign:feign-httpclient:13.6'
 
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    runtimeOnly 'com.mysql:mysql-connector-j'
-    // QueryDSL JPA (Jakarta persistence)
-    implementation 'com.querydsl:querydsl-jpa:5.0.0'
-    // QueryDSL APT (Annotation Processor) - for Q-class generation
-    compileOnly 'com.querydsl:querydsl-apt:5.0.0:jakarta'
-    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
-
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.flywaydb:flyway-core'
+    implementation 'org.flywaydb:flyway-mysql'
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    runtimeOnly 'com.mysql:mysql-connector-j'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // QueryDSL JPA + annotation processor
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor 'com.querydsl:querydsl-apt:5.0.0:jakarta'
+    annotationProcessor 'jakarta.persistence:jakarta.persistence-api:3.1.0'
 
 }
 
@@ -56,15 +59,15 @@ dependencyManagement {
 }
 
 sourceSets {
-    main{
+    main {
         java {
-            srcDirs = ['src/main/java', 'build/generated/sources/annotationProcessor/java/main']
+            srcDirs += "build/generated/sources/annotationProcessor/java/main"
         }
     }
 }
 
-compileJava {
-    options.annotationProcessorGeneratedSourcesDirectory = file("build/generated/sources/annotationProcessor/java/main");
+tasks.withType(JavaCompile).configureEach {
+    options.annotationProcessorGeneratedSourcesDirectory = file("build/generated/sources/annotationProcessor/java/main")
 }
 
 tasks.named('test') {
