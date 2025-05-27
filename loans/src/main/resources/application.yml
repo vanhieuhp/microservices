@@ -1,16 +1,26 @@
 server:
   port: 8090
 spring:
+  application:
+    name: loans
   datasource:
-    url: jdbc:h2:mem:testdb
-    driverClassName: org.h2.Driver
-    username: sa
-    password: ''
-  h2:
-    console:
-      enabled: true
+    url: jdbc:mysql://localhost:3306/cards?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    driverClassName: com.mysql.cj.jdbc.Driver
+    username: root
+    password: password
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.MySQL8Dialect  # Use MySQL8Dialect if you're on MySQL 8.x
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  flyway:
+    url: jdbc:mysql://localhost:3306/loans?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    user: root
+    password: password
+    schemas: loans
+    default-schema: loans
+    locations: classpath:db/migration
+    table: flyway_schema_history_loans
