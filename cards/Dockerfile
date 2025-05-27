@@ -4,8 +4,6 @@ FROM eclipse-temurin:21-jdk
 # Set working directory
 WORKDIR /app
 
-RUN touch test.txt
-
 # Copy the jar file
 COPY target/*.jar ./cards.jar
 
@@ -13,5 +11,4 @@ COPY target/*.jar ./cards.jar
 EXPOSE 8002
 
 # Run the application
-#ENTRYPOINT ["java", "-jar", "cards.jar"]
-ENTRYPOINT ["tail", "-f", "test.txt"]
+ENTRYPOINT ["java", "-jar", "cards.jar"]

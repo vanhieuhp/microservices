@@ -9,7 +9,7 @@ MAVEN_SERVICES := cards loans
 
 .PHONY: all bootJar build deploy
 
-all: bootJar build
+all: bootJar build deploy
 
 bootJar:
 	@echo "Building JAR files..."

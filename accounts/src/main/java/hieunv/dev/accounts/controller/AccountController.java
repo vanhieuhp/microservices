@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
         name = "CRUD REST APIs for Accounts in EasyBank",
         description = "CRUD REST APIs in EasyBank to Create, Update, Fetch and DELETE account details"
 )
-@RequestMapping(value = "/api/accounts", produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
 @RestController
 @AllArgsConstructor
 public class AccountController {
