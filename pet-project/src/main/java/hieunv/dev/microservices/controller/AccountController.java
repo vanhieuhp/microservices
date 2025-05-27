@@ -2,14 +2,25 @@ package hieunv.dev.microservices.controller;
 
 import hieunv.dev.microservices.constants.AccountConstants;
 import hieunv.dev.microservices.dto.CustomerDto;
+import hieunv.dev.microservices.dto.ErrorResponseDto;
 import hieunv.dev.microservices.dto.ResponseDto;
 import hieunv.dev.microservices.service.AccountService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(
+        name = "CRUD REST APIs for Accounts in EasyBank",
+        description = "CRUD REST APIs in EasyBank to Create, Update, Fetch and DELETE account details"
+)
 @RequestMapping(value = "/api/accounts", produces = {MediaType.APPLICATION_JSON_VALUE})
 @RestController
 @AllArgsConstructor
@@ -17,6 +28,14 @@ public class AccountController {
 
     private AccountService accountService;
 
+    @Operation(
+            summary = "Create Account REST API",
+            description = "Create Account REST API in EasyBank to create new account for a customer"
+    )
+    @ApiResponse(
+            responseCode = "201",
+            description = "Account created successfully"
+    )
     @PostMapping("/create")
     public ResponseEntity<ResponseDto> createAccount(@RequestBody CustomerDto requestBody) {
         accountService.createAccount(requestBody);
@@ -33,6 +52,19 @@ public class AccountController {
                 .body(customerDto);
     }
 
+    @ApiResponses(value = {
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Account updated successfully"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal server error",
+                    content = @Content(
+                            schema = @Schema(implementation = ErrorResponseDto.class)
+                    )
+            )
+    })
     @PutMapping("/update")
     public ResponseEntity<ResponseDto> updateAccount(@RequestBody CustomerDto requestBody) {
         boolean isUpdated = accountService.updateAccount(requestBody);
