@@ -12,10 +12,10 @@ spring:
   application:
     name: accounts
   datasource:
-    url: jdbc:mysql://localhost:3306/accounts?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    url: ${MYSQL_URL:jdbc:mysql://localhost:3306/accounts?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
     driverClassName: com.mysql.cj.jdbc.Driver
-    username: root
-    password: password
+    username: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:password}
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect  # Use MySQL8Dialect if you're on MySQL 8.x
     hibernate:
@@ -25,10 +25,10 @@ spring:
       hibernate:
         format_sql: true
   flyway:
-    url: jdbc:mysql://localhost:3306/accounts?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
-    user: root
-    password: password
-    schemas: accounts
-    default-schema: accounts
+    url: ${MYSQL_URL:jdbc:mysql://localhost:3306/accounts?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    user: ${MYSQL_USERNAME:root}
+    password: ${MYSQL_PASSWORD:password}
+    schemas: ${MYSQL_SCHEMA:accounts}
+    default-schema: ${MYSQL_SCHEMA:accounts}
     locations: classpath:db/migration
     table: flyway_schema_history_accounts

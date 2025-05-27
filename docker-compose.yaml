@@ -1,0 +1,117 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+#  mysql:
+#    image: mysql:8.0
+#    container_name: mysql
+#    restart: always
+#    environment:
+#      MYSQL_ROOT_PASSWORD: password
+#      MYSQL_MULTIPLE_DATABASES: accounts,cards,loans,products
+#    ports:
+#      - "3306:3306"
+#    volumes:
+#      - mysql-data:/var/lib/mysql
+#      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+#    healthcheck:
+#      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-uroot", "-ppassword"]
+#      interval: 30s
+#      timeout: 10s
+#      retries: 5
+#    networks:
+#      - microservices-network
+
+  # Accounts Service
+  accounts:
+    build:
+      context: ./accounts
+      dockerfile: Dockerfile
+    image: accounts:1.0
+    container_name: accounts
+    restart: always
+#    depends_on:
+#      mysql:
+#        condition: service_healthy
+    environment:
+      MYSQL_URL: jdbc:mysql://mysql:3306/accounts?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: password
+      MYSQL_SCHEMA: accounts
+    ports:
+      - "8001:8001"
+    networks:
+      - microservices-network
+
+  # Cards Service
+  cards:
+    build:
+      context: ./cards
+      dockerfile: Dockerfile
+    image: cards:1.0
+    container_name: cards
+    restart: always
+#    depends_on:
+#      mysql:
+#        condition: service_healthy
+    environment:
+      MYSQL_URL: jdbc:mysql://mysql:3306/cards?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: password
+      MYSQL_SCHEMA: cards
+    ports:
+      - "8002:8002"
+    networks:
+      - microservices-network
+
+  # Loans Service
+  loans:
+    build:
+      context: ./loans
+      dockerfile: Dockerfile
+    image: loans:1.0
+    container_name: loans
+    restart: always
+#    depends_on:
+#      mysql:
+#        condition: service_healthy
+    environment:
+      MYSQL_URL: jdbc:mysql://mysql:3306/loans?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: password
+      MYSQL_SCHEMA: loans
+    ports:
+      - "8003:8003"
+    networks:
+      - microservices-network
+
+  # Products Service
+  products:
+    build:
+      context: ./products
+      dockerfile: Dockerfile
+    image: products:1.0
+    container_name: products
+    restart: always
+#    depends_on:
+#      mysql:
+#        condition: service_healthy
+    environment:
+      MYSQL_URL: jdbc:mysql://mysql:3306/products?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      MYSQL_USERNAME: root
+      MYSQL_PASSWORD: password
+      MYSQL_SCHEMA: products
+    ports:
+      - "8000:8000"
+    networks:
+      - microservices-network
+
+networks:
+  microservices-network:
+    name: docker_network
+    external: true
+
+
+volumes:
+  mysql-data:
+    driver: local
