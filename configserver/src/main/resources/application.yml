@@ -11,12 +11,13 @@ spring:
 #          search-locations: "classpath:/config"
 #          search-locations: "file:///D:/dev/microservices//config"
         git:
-          uri: https://github.com/eazybytes/eazybytes-config.git
-          default-label: main
+
+          uri: https://github.com/vanhieuhp/microservices.git
+          default-label: "feature/pet-project"
           timeout: 5
           clone-on-start: true
           force-pull: true
-          search-paths: config
+          search-paths: config_properties
 
 encrypt:
   key: "encrypt-key-please-change-me"
