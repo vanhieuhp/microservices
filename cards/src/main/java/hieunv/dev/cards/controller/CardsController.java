@@ -1,6 +1,7 @@
 package hieunv.dev.cards.controller;
 
 import hieunv.dev.cards.constants.CardsConstants;
+import hieunv.dev.cards.dto.CardsContactInfoDto;
 import hieunv.dev.cards.dto.CardsDto;
 import hieunv.dev.cards.dto.ErrorResponseDto;
 import hieunv.dev.cards.dto.ResponseDto;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -159,6 +161,16 @@ public class CardsController {
                     .status(HttpStatus.EXPECTATION_FAILED)
                     .body(new ResponseDto(CardsConstants.STATUS_417, CardsConstants.MESSAGE_417_DELETE));
         }
+    }
+
+    @Autowired
+    private CardsContactInfoDto cardsContactInfoDto;
+
+    @GetMapping("/contact-info")
+    public ResponseEntity<CardsContactInfoDto> getContactInfo() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(cardsContactInfoDto);
     }
 
 }

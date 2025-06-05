@@ -9,10 +9,11 @@ springdoc:
     path: /api-docs
   swagger-ui:
     path: /swagger-ui.html
-
 spring:
   application:
     name: accounts
+  profiles:
+    active: "prod"
   datasource:
     url: ${MYSQL_URL:jdbc:mysql://localhost:3306/accounts?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
     driverClassName: com.mysql.cj.jdbc.Driver
@@ -34,3 +35,5 @@ spring:
     default-schema: ${MYSQL_SCHEMA:accounts}
     locations: classpath:db/migration
     table: flyway_schema_history_accounts
+  config:
+    import: "optional:configserver:http://localhost:8071/"

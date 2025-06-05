@@ -1,6 +1,7 @@
 package hieunv.dev.accounts.controller;
 
 import hieunv.dev.accounts.constants.AccountConstants;
+import hieunv.dev.accounts.dto.AccountsContactInfoDto;
 import hieunv.dev.accounts.dto.CustomerDto;
 import hieunv.dev.accounts.dto.ErrorResponseDto;
 import hieunv.dev.accounts.dto.ResponseDto;
@@ -12,6 +13,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
 @RestController
 @AllArgsConstructor
+@Configuration
 public class AccountController {
 
     private AccountService accountService;
@@ -91,4 +96,24 @@ public class AccountController {
                     .body(new ResponseDto(AccountConstants.STATUS_500, AccountConstants.MESSAGE_500));
         }
     }
+
+    @Autowired
+    private AccountsContactInfoDto accountsContactInfoDto;
+
+    @GetMapping("/contact-info")
+    public ResponseEntity<AccountsContactInfoDto> getContactInfo() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(accountsContactInfoDto);
+    }
+
+//    @Value("${build.version}")
+//    private String buildVersion;
+
+//    @GetMapping("/build-info")
+//    public ResponseEntity<String> getBuildInfo() {
+//        return ResponseEntity
+//                .status(HttpStatus.OK)
+//                .body(buildVersion);
+//    }
 }

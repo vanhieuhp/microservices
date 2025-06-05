@@ -13,6 +13,8 @@ springdoc:
 spring:
   application:
     name: loans
+  profiles:
+    active: prod
   datasource:
     url: ${MYSQL_URL:jdbc:mysql://localhost:3306/loans?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
     driverClassName: com.mysql.cj.jdbc.Driver
@@ -34,3 +36,5 @@ spring:
     default-schema: ${MYSQL_SCHEMA:loans}
     locations: classpath:db/migration
     table: flyway_schema_history_loans
+  config:
+    import: optional:configserver:http://localhost:8071
