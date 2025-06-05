@@ -1,0 +1,11 @@
+build:
+  version: 1.0
+
+loans:
+  message: "Welcome to EasyBank Loans related local API"
+  contactDetails:
+    name: "Hieu Van - Developer"
+    email: "vanhieuit10@gmail.com"
+  onCallSupport:
+    - (555) 555-1234
+    - (555) 523-1345

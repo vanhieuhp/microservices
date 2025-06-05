@@ -1,0 +1,11 @@
+build:
+  version: 3.0
+
+accounts:
+  message: "Welcome to EasyBank accounts related prod API"
+  contactDetails:
+    name: "Hieu Van - Developer"
+    email: "vanhieuit10@gmail.com"
+  onCallSupport:
+    - (666) 555-1234
+    - (666) 523-1345
