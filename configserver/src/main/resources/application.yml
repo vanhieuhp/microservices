@@ -25,6 +25,11 @@ spring:
     password: "guest"
     virtual-host: vh_host
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
 
 encrypt:
   key: "encrypt-key-please-change-me"
