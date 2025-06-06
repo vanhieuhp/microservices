@@ -2,7 +2,7 @@ build:
   version: 3.0
 
 cards:
-  message: "Welcome to EasyBank Cards related prod API"
+  message: "Welcome to EasyBank Cards related production API"
   contactDetails:
     name: "Hieu Van - Developer"
     email: "vanhieuit10@gmail.com"

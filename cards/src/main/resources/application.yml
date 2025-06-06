@@ -38,6 +38,12 @@ spring:
     table: flyway_schema_history_cards
   config:
     import: optional:configserver:http://localhost:8071
+  rabbitmq:
+    host: "localhost"
+    port: 5672
+    username: "guest"
+    password: "guest"
+    virtual-host: vh_host
 
 management:
   endpoints:

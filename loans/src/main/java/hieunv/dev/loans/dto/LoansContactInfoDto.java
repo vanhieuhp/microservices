@@ -11,7 +11,7 @@ import java.util.Map;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@ConfigurationProperties(prefix = "cards")
+@ConfigurationProperties(prefix = "loans")
 public class LoansContactInfoDto {
 
     private String message;

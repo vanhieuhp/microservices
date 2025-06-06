@@ -11,13 +11,20 @@ spring:
 #          search-locations: "classpath:/config"
 #          search-locations: "file:///D:/dev/microservices//config"
         git:
-
           uri: https://github.com/vanhieuhp/microservices.git
-          default-label: "feature/pet-project"
+          default-label: "feature/springcloud"
           timeout: 5
           clone-on-start: true
           force-pull: true
           search-paths: config_properties
+
+  rabbitmq:
+    host: "localhost"
+    port: 5672
+    username: "guest"
+    password: "guest"
+    virtual-host: vh_host
+
 
 encrypt:
   key: "encrypt-key-please-change-me"
