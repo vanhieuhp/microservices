@@ -19,11 +19,11 @@ spring:
           search-paths: config_properties
 
   rabbitmq:
-    host: "localhost"
-    port: 5672
-    username: "guest"
-    password: "guest"
-    virtual-host: vh_host
+    host: "${RABBITMQ_HOST}"
+    port: "${RABBITMQ_PORT}"
+    username: "${RABBITMQ_USERNAME}"
+    password: "${RABBITMQ_PASSWORD}"
+    virtual-host: "${RABBITMQ_VIRTUAL_HOST}"
 
 management:
   endpoints:

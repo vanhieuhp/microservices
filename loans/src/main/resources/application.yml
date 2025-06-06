@@ -37,13 +37,13 @@ spring:
     locations: classpath:db/migration
     table: flyway_schema_history_loans
   config:
-    import: optional:configserver:http://localhost:8071
+    import: "${SPRING_CLOUD_CONFIG_URL}"
   rabbitmq:
-    host: "localhost"
-    port: 5672
-    username: "guest"
-    password: "guest"
-    virtual-host: vh_host
+    host: "${RABBITMQ_HOST}"
+    port: "${RABBITMQ_PORT}"
+    username: "${RABBITMQ_USERNAME}"
+    password: "${RABBITMQ_PASSWORD}"
+    virtual-host: "${RABBITMQ_VIRTUAL_HOST}"
 
 management:
   endpoints:
