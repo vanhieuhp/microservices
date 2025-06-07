@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: cards-secret
+  namespace: microservices
+type: Opaque
+data:
+  DB_NAME: Y2FyZHMK
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cards-deployment
+  namespace: microservices
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cards-deployment
+  template:
+    metadata:
+      labels:
+        app: cards-deployment
+    spec:
+      containers:
+      - name: cards-deployment
+        image: cards:1.0
+        resources:
+          limits:
+            memory: "1024Mi"
+            cpu: "1000m"
+          requests:
+            memory: "512Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 8001
+        envFrom:
+        - secretRef:
+            name: microservices-secret
+        env:
+        - name: DB_NAME
+          valueFrom:
+            secretKeyRef:
+              name: cards-secret
+              key: DB_NAME
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cards-service
+  namespace: microservices
+spec:
+  selector:
+    app: cards-deployment
+  ports:
+  - port: 8002
+    targetPort: 8002
+  type: ClusterIP
+---
+
+

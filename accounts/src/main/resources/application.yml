@@ -3,6 +3,13 @@ server:
   servlet:
     context-path: /api
 
+db:
+  host: "${DB_HOST:localhost}"
+  port: "${DB_PORT:3306}"
+  name: "${DB_NAME:accounts}"
+  user: "${DB_USER:root}"
+  password: "${DB_PASSWORD:password}"
+
 # swagger-ui custom path
 springdoc:
   api-docs:
@@ -15,12 +22,12 @@ spring:
   profiles:
     active: "prod"
   datasource:
-    url: ${MYSQL_URL:jdbc:mysql://localhost:3306/accounts?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    url: jdbc:mysql://${db.host}:${db.port}/${db.name}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
     driverClassName: com.mysql.cj.jdbc.Driver
-    username: ${MYSQL_USERNAME:root}
-    password: ${MYSQL_PASSWORD:password}
+    username: ${db.user}
+    password: ${db.password}
   jpa:
-    database-platform: org.hibernate.dialect.MySQL8Dialect  # Use MySQL8Dialect if you're on MySQL 8.x
+    database-platform: org.hibernate.dialect.MySQL8Dialect # Use MySQL8Dialect if you're on MySQL 8.x
     hibernate:
       ddl-auto: none
     show-sql: true
@@ -28,21 +35,21 @@ spring:
       hibernate:
         format_sql: true
   flyway:
-    url: ${MYSQL_URL:jdbc:mysql://localhost:3306/accounts?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
-    user: ${MYSQL_USERNAME:root}
-    password: ${MYSQL_PASSWORD:password}
-    schemas: ${MYSQL_SCHEMA:accounts}
-    default-schema: ${MYSQL_SCHEMA:accounts}
+    url: jdbc:mysql://${db.host}:${db.port}/${db.name}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+    user: ${db.user}
+    password: ${db.password}
+    schemas: ${db.name}
+    default-schema: ${db.name}
     locations: classpath:db/migration
     table: flyway_schema_history_accounts
   config:
-    import: "${SPRING_CLOUD_CONFIG_URL}"
+    import: "${SPRING_CLOUD_CONFIG_URL:optional:configserver:http://localhost:8071/}"
   rabbitmq:
-    host: "${RABBITMQ_HOST}"
-    port: "${RABBITMQ_PORT}"
-    username: "${RABBITMQ_USERNAME}"
-    password: "${RABBITMQ_PASSWORD}"
-    virtual-host: "${RABBITMQ_VIRTUAL_HOST}"
+    host: "${RABBITMQ_HOST:localhost}"
+    port: "${RABBITMQ_PORT:5672}"
+    username: "${RABBITMQ_USERNAME:guest}"
+    password: "${RABBITMQ_PASSWORD:guest}"
+    virtual-host: "${RABBITMQ_VIRTUAL_HOST:vh_host}"
 
 management:
   endpoints:

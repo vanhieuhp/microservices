@@ -1,0 +1,69 @@
+name: "microservices"
+
+services:
+  configserver:
+    image: configserver:1.0
+    container_name: configserver
+    ports:
+      - "8071:8071"
+    environment:
+      - SPRING_PROFILES_ACTIVE=git
+    healthcheck:
+      test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    extends:
+      file: common-config.yml
+      service: microservices-base-config
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+  
+  accounts:
+    image: accounts:1.0
+    container_name: accounts
+    ports:
+      - "8001:8001"
+    environment:
+      - DB_NAME=accounts
+    depends_on:
+      configserver:
+        condition: service_healthy
+    extends:
+      file: common-config.yml
+      service: microservice-configserver-config
+  
+  cards:
+    image: cards:1.0
+    container_name: cards
+    ports:
+      - "8002:8002"
+    environment:
+      - DB_NAME=cards
+    depends_on:
+      configserver:
+        condition: service_healthy
+    extends:
+      file: common-config.yml
+      service: microservice-configserver-config
+  
+  loans:
+    image: loans:1.0
+    container_name: loans
+    ports:
+      - "8003:8003"
+    environment:
+      - DB_NAME=loans
+    depends_on:
+      configserver:
+        condition: service_healthy
+    extends:
+      file: common-config.yml
+      service: microservice-configserver-config
+
+networks:
+  network1:
+    name: docker_network
+    external: true

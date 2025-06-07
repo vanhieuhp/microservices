@@ -46,7 +46,9 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 })
 @EnableJpaRepositories({"hieunv.dev.accounts.repository"})
 @EntityScan({"hieunv.dev.accounts.entity"})
-@EnableConfigurationProperties(value={AccountsContactInfoDto.class})
+@EnableConfigurationProperties(value = {
+        AccountsContactInfoDto.class
+})
 public class AccountsApplication {
 
     public static void main(String[] args) {

@@ -2,14 +2,15 @@ spring:
   application:
     name: configserver
   profiles:
-#    active: native
-    active: git
+    active: native
+#    active: git
   cloud:
     config:
       server:
-#        native:
-#          search-locations: "classpath:/config"
+        native:
+          search-locations: "classpath:/config"
 #          search-locations: "file:///D:/dev/microservices//config"
+#          search-locations: "file:////home/hieunv/projects/microservices/configserver/config_properties"
         git:
           uri: https://github.com/vanhieuhp/microservices.git
           default-label: "feature/springcloud"
@@ -19,11 +20,11 @@ spring:
           search-paths: config_properties
 
   rabbitmq:
-    host: "${RABBITMQ_HOST}"
-    port: "${RABBITMQ_PORT}"
-    username: "${RABBITMQ_USERNAME}"
-    password: "${RABBITMQ_PASSWORD}"
-    virtual-host: "${RABBITMQ_VIRTUAL_HOST}"
+    host: "${RABBITMQ_HOST:localhost}"
+    port: "${RABBITMQ_PORT:5672}"
+    username: "${RABBITMQ_USERNAME:guest}"
+    password: "${RABBITMQ_PASSWORD:guest}"
+    virtual-host: "${RABBITMQ_VIRTUAL_HOST:vh_host}"
 
 management:
   endpoints:
