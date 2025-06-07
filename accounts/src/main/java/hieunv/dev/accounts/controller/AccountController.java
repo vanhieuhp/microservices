@@ -5,7 +5,7 @@ import hieunv.dev.accounts.dto.AccountsContactInfoDto;
 import hieunv.dev.accounts.dto.CustomerDto;
 import hieunv.dev.accounts.dto.ErrorResponseDto;
 import hieunv.dev.accounts.dto.ResponseDto;
-import hieunv.dev.accounts.service.AccountService;
+import hieunv.dev.accounts.service.impl.AccountService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -25,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
         name = "CRUD REST APIs for Accounts in EasyBank",
         description = "CRUD REST APIs in EasyBank to Create, Update, Fetch and DELETE account details"
 )
-@RequestMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(produces = {MediaType.APPLICATION_JSON_VALUE}, value = "/accounts")
 @RestController
 @AllArgsConstructor
 @Configuration

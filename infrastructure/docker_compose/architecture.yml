@@ -37,7 +37,7 @@ services:
     environment:
     - RABBITMQ_DEFAULT_USER=guest
     - RABBITMQ_DEFAULT_PASS=guest
-    - RABBITMQ_DEFAULT_VHOST=vh_hosts
+    - RABBITMQ_DEFAULT_VHOST=vh_host
     healthcheck:
       test: [ "CMD", "rabbitmq-diagnostics", "check_running" ]
       interval: 10s

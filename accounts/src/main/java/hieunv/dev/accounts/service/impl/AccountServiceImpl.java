@@ -1,4 +1,4 @@
-package hieunv.dev.accounts.service;
+package hieunv.dev.accounts.service.impl;
 
 import hieunv.dev.accounts.constants.AccountConstants;
 import hieunv.dev.accounts.dto.AccountDto;

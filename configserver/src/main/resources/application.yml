@@ -8,16 +8,16 @@ spring:
     config:
       server:
         native:
-          search-locations: "classpath:/config"
+#          search-locations: "classpath:/config"
 #          search-locations: "file:///D:/dev/microservices//config"
-#          search-locations: "file:////home/hieunv/projects/microservices/configserver/config_properties"
+          search-locations: "file:////home/hieunv/projects/microservices/infrastructure/config_properties"
         git:
           uri: https://github.com/vanhieuhp/microservices.git
           default-label: "feature/springcloud"
           timeout: 5
           clone-on-start: true
           force-pull: true
-          search-paths: config_properties
+          search-paths: infrastructure/config_properties
 
   rabbitmq:
     host: "${RABBITMQ_HOST:localhost}"
