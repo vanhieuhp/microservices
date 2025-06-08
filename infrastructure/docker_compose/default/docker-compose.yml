@@ -17,8 +17,23 @@ services:
     extends:
       file: common-config.yml
       service: microservices-base-config
+
+  eurekaserver:
+    image: eurekaserver:1.0
+    container_name: eurekaserver
+    ports:
+      - "8010:8010"
+    healthcheck:
+      test: "curl --fail --silent localhost:8010/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    extends:
+      file: common-config.yml
+      service: microservices-base-eureka
     depends_on:
-      rabbitmq:
+      configserver:
         condition: service_healthy
   
   accounts:
@@ -30,6 +45,8 @@ services:
       - DB_NAME=accounts
     depends_on:
       configserver:
+        condition: service_healthy
+      eurekaserver:
         condition: service_healthy
     extends:
       file: common-config.yml
@@ -45,6 +62,8 @@ services:
     depends_on:
       configserver:
         condition: service_healthy
+      eurekaserver:
+        condition: service_healthy
     extends:
       file: common-config.yml
       service: microservice-configserver-config
@@ -58,6 +77,8 @@ services:
       - DB_NAME=loans
     depends_on:
       configserver:
+        condition: service_healthy  
+      eurekaserver:
         condition: service_healthy
     extends:
       file: common-config.yml

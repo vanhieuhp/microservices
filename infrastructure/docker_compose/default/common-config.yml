@@ -3,6 +3,13 @@ services:
     networks:
     - network1
 
+  microservices-base-eureka:
+    extends: network-deploy-service
+    deploy:
+      resources:
+        limits:
+          memory: 700m
+
   microservices-base-config:
     extends: network-deploy-service
     deploy:
@@ -14,7 +21,7 @@ services:
       RABBITMQ_PORT: 5672
       RABBITMQ_USERNAME: guest
       RABBITMQ_PASSWORD: guest
-      RABBITMQ_VIRTUAL_HOST: vh_hosts
+      RABBITMQ_VIRTUAL_HOST: vh_host
 
   microservice-configserver-config:
     extends: microservices-base-config

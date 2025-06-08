@@ -1,0 +1,50 @@
+version: '3.8'
+
+x-network-deploy: &network-deploy
+  networks:
+  - network1
+
+x-rabbitmq-config: &rabbitmq-config
+  environment:
+    RABBITMQ_HOST: rabbitmq
+    RABBITMQ_PORT: 5672
+    RABBITMQ_USERNAME: guest
+    RABBITMQ_PASSWORD: guest
+    RABBITMQ_VIRTUAL_HOST: vh_host
+
+x-mysql-config: &mysql-config
+  environment:
+    DB_HOST: mysql
+    DB_PORT: 3306
+    DB_USER: root
+    DB_PASSWORD: password
+
+x-resources-config: &resources-config
+  deploy:
+    resources:
+      limits:
+        memory: 700m
+
+services:
+  microservices-eureka-config:
+    <<: [ *network-deploy, *resources-config ]
+    image: eurekaserver
+    environment:
+      SPRING_CLOUD_CONFIG_URL: configserver:http://configserver:8071
+
+  microservices-service-config:
+    <<: [ *network-deploy, *rabbitmq-config, *mysql-config, *resources-config ]
+    image: service
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SPRING_CLOUD_CONFIG_URL: configserver:http://configserver:8071
+      EUREKA_SERVER_URL: http://eurekaserver:8010/eureka/
+
+  microservices-configserver-config:
+    <<: [ *network-deploy, *rabbitmq-config, *resources-config ]
+    image: configserver
+    environment:
+      SPRING_PROFILES_ACTIVE: git
+
+networks:
+  network1:

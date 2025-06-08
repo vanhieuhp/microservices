@@ -2,7 +2,7 @@
 BASE_DIR := $(shell pwd)
 
 # Services
-GRADLE_SERVICES := accounts configserver
+GRADLE_SERVICES := accounts configserver eurekaserver
 MAVEN_SERVICES := cards loans
 
 # ========== TASKS ==========
