@@ -22,9 +22,9 @@ services:
     image: eurekaserver:1.0
     container_name: eurekaserver
     ports:
-      - "8010:8010"
+      - "8761:8761"
     healthcheck:
-      test: "curl --fail --silent localhost:8010/actuator/health/readiness | grep UP || exit 1"
+      test: "curl --fail --silent localhost:8761/actuator/health/readiness | grep UP || exit 1"
       interval: 10s
       timeout: 5s
       retries: 10
@@ -35,6 +35,24 @@ services:
     depends_on:
       configserver:
         condition: service_healthy
+
+  gateway:
+    image: gatewayserver:1.0
+    container_name: gateway
+    ports:
+      - "8072:8072"
+    healthcheck:
+      test: "curl --fail --silent localhost:8072/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    depends_on:
+      eurekaserver:
+        condition: service_healthy
+    extends:
+      file: common-config.yml
+      service: microservices-gateway-config
   
   accounts:
     image: accounts:1.0
@@ -44,9 +62,7 @@ services:
     environment:
       - DB_NAME=accounts
     depends_on:
-      configserver:
-        condition: service_healthy
-      eurekaserver:
+      gateway:
         condition: service_healthy
     extends:
       file: common-config.yml
@@ -60,9 +76,7 @@ services:
     environment:
       - DB_NAME=cards
     depends_on:
-      configserver:
-        condition: service_healthy
-      eurekaserver:
+      gateway:
         condition: service_healthy
     extends:
       file: common-config.yml
@@ -76,9 +90,7 @@ services:
     environment:
       - DB_NAME=loans
     depends_on:
-      configserver:
-        condition: service_healthy  
-      eurekaserver:
+      gateway:
         condition: service_healthy
     extends:
       file: common-config.yml

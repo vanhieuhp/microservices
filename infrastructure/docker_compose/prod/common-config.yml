@@ -14,6 +14,12 @@ services:
     extends: network-config
     environment:
       SPRING_CLOUD_CONFIG_URL: configserver:http://configserver:8071
+  
+  microservices-gateway-config:
+    extends: network-config
+    environment:
+      EUREKA_SERVER_URL: http://eurekaserver:8761/eureka/
+      SPRING_CLOUD_CONFIG_URL: configserver:http://configserver:8071
 
   microservices-configserver-config:
     extends: network-config
@@ -33,4 +39,4 @@ services:
       DB_PASSWORD: password
       SPRING_PROFILES_ACTIVE: prod
       SPRING_CLOUD_CONFIG_URL: configserver:http://configserver:8071
-      EUREKA_SERVER_URL: http://eurekaserver:8010/eureka/
+      EUREKA_SERVER_URL: http://eurekaserver:8761/eureka/

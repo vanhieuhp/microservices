@@ -10,15 +10,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+@Log4j2
 @Tag(
         name = "CRUD REST APIs for Customer in EasyBank",
         description = "CRUD REST APIs in EasyBank to Create, Update, Fetch and DELETE Customer details"
@@ -45,10 +44,12 @@ public class CustomerController {
             )
     })
     @GetMapping("/fetchCustomerDetails")
-    public ResponseEntity<CustomerDetailsDto> fetchCustomerDetails(@RequestParam
-                                                     @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
-                                                     String mobileNumber) {
-        CustomerDetailsDto cardsDto = customerService.fetchCustomerDetails(mobileNumber);
+    public ResponseEntity<CustomerDetailsDto> fetchCustomerDetails(
+            @RequestParam @Pattern(regexp="(^$|[0-9]{10})", message = "Mobile number must be 10 digits") String mobileNumber,
+            @RequestHeader(name = "easybank-correlation-id") String correlationId) {
+        log.debug("easyBank-correlation-if found: {}", correlationId);
+
+        CustomerDetailsDto cardsDto = customerService.fetchCustomerDetails(mobileNumber, correlationId);
         return ResponseEntity.status(HttpStatus.OK).body(cardsDto);
     }
 }

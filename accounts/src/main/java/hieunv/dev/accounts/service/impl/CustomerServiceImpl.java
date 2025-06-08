@@ -29,7 +29,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final LoansFeignClient loansFeignClient;
 
     @Override
-    public CustomerDetailsDto fetchCustomerDetails(String mobileNumber) {
+    public CustomerDetailsDto fetchCustomerDetails(String mobileNumber, String correlationId) {
         Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
                 () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
         );
@@ -42,14 +42,14 @@ public class CustomerServiceImpl implements CustomerService {
         customerDetailsDto.setAccountDto(AccountMapper.mapToAccountDto(account, new AccountDto()));
 
         try {
-            ResponseEntity<CardsDto> cardsDtoResponseEntity = cardsFeignClient.fetchCardsDetails(mobileNumber);
+            ResponseEntity<CardsDto> cardsDtoResponseEntity = cardsFeignClient.fetchCardsDetails(mobileNumber, correlationId);
             customerDetailsDto.setCardsDto(cardsDtoResponseEntity.getBody());
         } catch (Exception e) {
             log.error("Error occurred while fetching cards details for mobileNumber: {} - {}", mobileNumber, e.getMessage());
         }
 
         try {
-            ResponseEntity<LoansDto> loansDtoResponseEntity = loansFeignClient.fetchLoansDetails(mobileNumber);
+            ResponseEntity<LoansDto> loansDtoResponseEntity = loansFeignClient.fetchLoansDetails(mobileNumber, correlationId);
             customerDetailsDto.setLoansDto(loansDtoResponseEntity.getBody());
         } catch (Exception e) {
             log.error("Error occurred while fetching loans details for mobileNumber: {} - {}", mobileNumber, e.getMessage());

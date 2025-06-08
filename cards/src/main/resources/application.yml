@@ -85,4 +85,10 @@ eureka:
     fetchRegistry: true
     registerWithEureka: true
     serviceUrl:
-      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8010/eureka/}
+      defaultZone: "${EUREKA_SERVER_URL:http://localhost:8761/eureka/}"
+
+logging:
+  level:
+    hieunv:
+      dev:
+        cards: DEBUG
