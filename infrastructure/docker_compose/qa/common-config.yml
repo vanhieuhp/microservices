@@ -1,27 +1,36 @@
 services:
-  network-deploy-service:
-    networks:
-    - network1
-
-  microservices-base-config:
-    extends: network-deploy-service
+  resources-config:
     deploy:
       resources:
         limits:
           memory: 700m
+
+  network-config:
+    extends: resources-config
+    networks:
+      - network1
+
+  microservices-eureka-config:
+    extends: network-config
+    environment:
+      SPRING_CLOUD_CONFIG_URL: configserver:http://configserver:8071
+
+  microservices-configserver-config:
+    extends: network-config
     environment:
       RABBITMQ_HOST: rabbitmq
       RABBITMQ_PORT: 5672
       RABBITMQ_USERNAME: guest
       RABBITMQ_PASSWORD: guest
-      RABBITMQ_VIRTUAL_HOST: vh_hosts
+      RABBITMQ_VIRTUAL_HOST: vh_host
 
-  microservice-configserver-config:
-    extends: microservices-base-config
+  microservices-service-config:
+    extends: microservices-configserver-config
     environment:
-      SPRING_PROFILES_ACTIVE: qa
-      SPRING_CONFIG_IMPORT: configserver:http://configserver:8071
       DB_HOST: mysql
       DB_PORT: 3306
       DB_USER: root
       DB_PASSWORD: password
+      SPRING_PROFILES_ACTIVE: qa
+      SPRING_CLOUD_CONFIG_URL: configserver:http://configserver:8071
+      EUREKA_SERVER_URL: http://eurekaserver:8010/eureka/

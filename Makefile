@@ -2,7 +2,7 @@
 BASE_DIR := $(shell pwd)
 
 # Services
-GRADLE_SERVICES := accounts configserver
+GRADLE_SERVICES := accounts configserver eurekaserver
 MAVEN_SERVICES := cards loans
 
 # ========== TASKS ==========
@@ -26,6 +26,7 @@ build:
 	@echo "Building Docker images..."
 	@for service in $(GRADLE_SERVICES) $(MAVEN_SERVICES); do \
 		echo "-> Building Docker image for $$service"; \
+		docker rmi $$service:1.0; \
 		docker build -t $$service:1.0 $(BASE_DIR)/$$service; \
 	done
 
