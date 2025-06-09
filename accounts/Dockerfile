@@ -6,6 +6,7 @@ WORKDIR /app
 
 # Copy the jar file
 COPY build/libs/*.jar ./accounts.jar
+COPY ./opentelemetry-javaagent.jar ./opentelemetry-javaagent.jar
 
 # Expose the port the app runs on
 EXPOSE 8001

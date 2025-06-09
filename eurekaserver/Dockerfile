@@ -6,6 +6,7 @@ WORKDIR /app
 
 # Copy the jar file
 COPY build/libs/eurekaserver-0.0.1-SNAPSHOT.jar ./eurekaserver.jar
+COPY ./opentelemetry-javaagent.jar ./opentelemetry-javaagent.jar
 
 # Expose the port the app runs on
 EXPOSE 8010
