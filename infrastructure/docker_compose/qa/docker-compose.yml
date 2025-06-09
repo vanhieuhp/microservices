@@ -36,6 +36,66 @@ services:
       configserver:
         condition: service_healthy
 
+  accounts:
+    image: accounts:1.0
+    container_name: accounts
+    ports:
+      - "8001:8001"
+    environment:
+      - DB_NAME=accounts
+    healthcheck:
+      test: "curl --fail --silent localhost:8001/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    depends_on:
+      eurekaserver:
+        condition: service_healthy
+    extends:
+      file: common-config.yml
+      service: microservices-service-config
+
+  cards:
+    image: cards:1.0
+    container_name: cards
+    ports:
+      - "8002:8002"
+    environment:
+      - DB_NAME=cards
+    healthcheck:
+      test: "curl --fail --silent localhost:8002/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    depends_on:
+      eurekaserver:
+        condition: service_healthy
+    extends:
+      file: common-config.yml
+      service: microservices-service-config
+
+  loans:
+    image: loans:1.0
+    container_name: loans
+    ports:
+      - "8003:8003"
+    environment:
+      - DB_NAME=loans
+    healthcheck:
+      test: "curl --fail --silent localhost:8003/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    depends_on:
+      eurekaserver:
+        condition: service_healthy
+    extends:
+      file: common-config.yml
+      service: microservices-service-config
+
   gateway:
     image: gatewayserver:1.0
     container_name: gateway
@@ -50,51 +110,15 @@ services:
     depends_on:
       eurekaserver:
         condition: service_healthy
+      accounts:
+        condition: service_healthy
+      loans:
+        condition: service_healthy
+      cards:
+        condition: service_healthy
     extends:
       file: common-config.yml
       service: microservices-gateway-config
-
-  accounts:
-    image: accounts:1.0
-    container_name: accounts
-    ports:
-      - 8001:8001
-    environment:
-      - DB_NAME=accounts
-    depends_on:
-      gateway:
-        condition: service_healthy
-    extends:
-      file: common-config.yml
-      service: microservices-service-config
-  
-  cards:
-    image: cards:1.0
-    container_name: cards
-    ports:
-      - "8002:8002"
-    environment:
-      - DB_NAME=cards
-    depends_on:
-      gateway:
-        condition: service_healthy
-    extends:
-      file: common-config.yml
-      service: microservices-service-config
-  
-  loans:
-    image: loans:1.0
-    container_name: loans
-    ports:
-      - "8003:8003"
-    environment:
-      - DB_NAME=loans
-    depends_on:
-      gateway:
-        condition: service_healthy
-    extends:
-      file: common-config.yml
-      service: microservices-service-config
 
 networks:
   network1:

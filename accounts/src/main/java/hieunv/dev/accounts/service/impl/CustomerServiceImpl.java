@@ -43,14 +43,18 @@ public class CustomerServiceImpl implements CustomerService {
 
         try {
             ResponseEntity<CardsDto> cardsDtoResponseEntity = cardsFeignClient.fetchCardsDetails(mobileNumber, correlationId);
-            customerDetailsDto.setCardsDto(cardsDtoResponseEntity.getBody());
+            if (null != cardsDtoResponseEntity) {
+                customerDetailsDto.setCardsDto(cardsDtoResponseEntity.getBody());
+            }
         } catch (Exception e) {
             log.error("Error occurred while fetching cards details for mobileNumber: {} - {}", mobileNumber, e.getMessage());
         }
 
         try {
             ResponseEntity<LoansDto> loansDtoResponseEntity = loansFeignClient.fetchLoansDetails(mobileNumber, correlationId);
-            customerDetailsDto.setLoansDto(loansDtoResponseEntity.getBody());
+            if (null != loansDtoResponseEntity) {
+                customerDetailsDto.setLoansDto(loansDtoResponseEntity.getBody());
+            }
         } catch (Exception e) {
             log.error("Error occurred while fetching loans details for mobileNumber: {} - {}", mobileNumber, e.getMessage());
         }
