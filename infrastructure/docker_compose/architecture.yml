@@ -68,11 +68,6 @@ services:
     - network1
     restart: unless-stopped
 
-  nginx:
-    image: nginx:1.27.3
-    depends_on:
-
-
 volumes:
   mysql_data:
     name: mysql_data
