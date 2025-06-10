@@ -2,6 +2,7 @@ package hieunv.dev.accounts.service.impl;
 
 import hieunv.dev.accounts.constants.AccountConstants;
 import hieunv.dev.accounts.dto.AccountDto;
+import hieunv.dev.accounts.dto.AccountMsgDto;
 import hieunv.dev.accounts.dto.CustomerDto;
 import hieunv.dev.accounts.entity.Account;
 import hieunv.dev.accounts.entity.Customer;
@@ -12,16 +13,25 @@ import hieunv.dev.accounts.mapper.CustomerMapper;
 import hieunv.dev.accounts.repository.AccountRepository;
 import hieunv.dev.accounts.repository.CustomerRepository;
 import lombok.AllArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
+@Log4j2
 public class AccountServiceImpl implements AccountService {
 
-    private AccountRepository accountRepository;
-    private CustomerRepository customerRepository;
+    private final AccountRepository accountRepository;
+    private final CustomerRepository customerRepository;
+    private final StreamBridge streamBridge;
+
+    public AccountServiceImpl(AccountRepository accountRepository, CustomerRepository customerRepository, StreamBridge streamBridge) {
+        this.accountRepository = accountRepository;
+        this.customerRepository = customerRepository;
+        this.streamBridge = streamBridge;
+    }
 
     @Override
     public void createAccount(CustomerDto customerDto) {
@@ -31,7 +41,16 @@ public class AccountServiceImpl implements AccountService {
             throw new CustomerAlreadyExistsException("Customer already registered with mobile number: " + customerDto.getMobileNumber());
         }
         Customer savedCustomer = customerRepository.save(customer);
-        accountRepository.save(createNewAccount(savedCustomer));
+        Account savedAccount = accountRepository.save(createNewAccount(savedCustomer));
+        sendCommunication(savedAccount, savedCustomer);
+    }
+
+    private void sendCommunication(Account account, Customer customer) {
+        var accountMsgDto = new AccountMsgDto(customer.getEmail(), customer.getName(),
+                customer.getMobileNumber(), account.getAccountNumber());
+        log.info("Sending account created message to communication service: {}", accountMsgDto);
+        var result = streamBridge.send("sendCommunication-out-0", accountMsgDto);
+        log.info("Result of sending account created message to communication service: {}", result);
     }
 
     @Override
@@ -87,6 +106,20 @@ public class AccountServiceImpl implements AccountService {
         accountRepository.deleteByCustomerId(customer.getCustomerId());
         customerRepository.deleteById(customer.getCustomerId());
         return true;
+    }
+
+    @Override
+    public boolean updateCommunication(Long accountNumber) {
+        boolean isUpdated = false;
+        if(accountNumber !=null ){
+            Account accounts = accountRepository.findById(accountNumber).orElseThrow(
+                    () -> new ResourceNotFoundException("Account", "AccountNumber", accountNumber.toString())
+            );
+            accounts.setCommunicationSw(true);
+            accountRepository.save(accounts);
+            isUpdated = true;
+        }
+        return  isUpdated;
     }
 
     private Account createNewAccount(Customer customer) {

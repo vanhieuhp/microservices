@@ -1,0 +1,51 @@
+# /config/grafana/provisioning/datasources/datasources.yml
+apiVersion: 1
+
+# List of data sources to insert/update depending on what's
+# available in the database.
+datasources:
+  - name: Prometheus
+    type: prometheus
+    uid: prometheus
+    access: proxy
+    orgId: 1
+    url: http://prometheus:9090
+    basicAuth: false
+    isDefault: false
+    version: 1
+    editable: false
+    jsonData:
+      httpMethod: GET
+
+  - name: Tempo
+    type: tempo
+    access: proxy
+    orgId: 1
+    url: http://tempo:3200
+    basicAuth: false
+    isDefault: true
+    version: 1
+    editable: false
+    apiVersion: 1
+    uid: tempo
+    jsonData:
+      httpMethod: GET
+      serviceMap:
+        datasourceUid: prometheus
+      streamingEnabled:
+        search: true
+
+  - name: Loki # Name of the datasource as it will appear in Grafana
+    type: loki
+    access: proxy # Grafana backend proxies requests to Loki; 'direct' means browser access
+    url: http://loki:3100 # Address of the Loki service, resolvable within the Docker network
+    jsonData:
+      # For logs-to-traces correlation if you also have Tempo/Jaeger:
+      # derivedFields:
+      #   - datasourceUid: 'YOUR_TRACING_DATASOURCE_UID' # UID of your tracing datasource in Grafana
+      #     matcherRegex: 'trace_id=(\w+)' # Regex to extract trace ID from log line
+      #     name: 'TraceID' # Name of the derived field
+      #     url: '$${__value.raw}' # URL to link to (Tempo/Jaeger query)
+      #     # Example for Jaeger:
+      #     # url: '/explore?orgId=1&left=["now-1h","now","Jaeger",{"query":"$${__value.raw}"}]'
+      maxLines: 1000 # Default limit for lines returned by a query in Explore

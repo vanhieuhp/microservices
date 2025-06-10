@@ -2,12 +2,12 @@
 BASE_DIR := $(shell pwd)
 
 # Services
-GRADLE_SERVICES := accounts configserver eurekaserver gatewayserver
-MAVEN_SERVICES := cards loans
+GRADLE_SERVICES := accounts cards loans configserver eurekaserver gatewayserver messages
+MAVEN_SERVICES :=
 
 # ========== TASKS ==========
 
-.PHONY: all bootJar build deploy
+.PHONY: all bootJar build deploy publish
 
 all: bootJar build deploy
 
@@ -35,3 +35,8 @@ deploy:
 	# Add your deployment steps here. Example:
 	@docker-compose up -d
 	# kubectl apply -f k8s/
+
+publish:
+	@echo "Publish commonlib to maven local"
+	@cd commonlib && ./gradlew clean build -x test && ./gradlew publishToMavenLocal
+	@echo "Publish commonlib to maven local successfully!"

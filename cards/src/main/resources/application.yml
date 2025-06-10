@@ -52,26 +52,6 @@ spring:
     password: "${RABBITMQ_PASSWORD:guest}"
     virtual-host: "${RABBITMQ_VIRTUAL_HOST:vh_host}"
 
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  health:
-    readiness-state:
-      enabled: true
-    liveness-state:
-      enabled: true
-  endpoint:
-    health:
-      probes:
-        enabled: true
-    shutdown:
-      access: unrestricted
-  info:
-    env:
-      enabled: true
-
 info:
   app:
     name: "cards"
@@ -86,11 +66,3 @@ eureka:
     registerWithEureka: true
     serviceUrl:
       defaultZone: "${EUREKA_SERVER_URL:http://localhost:8761/eureka/}"
-
-logging:
-  level:
-    hieunv:
-      dev:
-        cards: DEBUG
-  pattern:
-    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"

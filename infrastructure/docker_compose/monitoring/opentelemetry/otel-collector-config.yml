@@ -1,0 +1,100 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: 0.0.0.0:4317
+      http:
+        endpoint: 0.0.0.0:4318
+        cors:
+          # Necessary if browser-based JS sends OTLP/HTTP directly
+          allowed_origins:
+            - "http://*"
+            - "https://*"
+        # allowed_headers:
+        #   - "Content-Type"
+
+processors:
+  batch:
+    # Batches telemetry data to optimize export
+    timeout: 100ms # How long to wait before sending a batch
+    send_batch_size: 1024 # Max number of spans/metrics/logs in a batch
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 1500 # Max memory Collector can use (MiB, 1.5GB), adjust based on container limits
+    spike_limit_mib: 512 # Additional memory for spikes (MiB)
+
+exporters:
+  debug:
+    verbosity: detailed # For debugging, prints telemetry data to logs
+  # ---- For Metrics ----
+  prometheus:
+    endpoint: 0.0.0.0:8889 # Scrape endpoint for Prometheus
+    namespace: "opentelemetry" # Optional: prefix for metrics
+    const_labels:
+      exporter: "otelcollector" # Labels added to all exported metrics
+    send_timestamps: true # Send timestamps to Prometheus
+    metric_expiration: 180m # How long to keep metrics without updates (180 minutes)
+    resource_to_telemetry_conversion:
+      enabled: true # Enable to convert resource attributes to metrics labels
+
+  # ---- For Traces ----
+  otlp/tempo:
+    # endpoint: http://tempo:3200 # For HTTP:
+    endpoint: tempo:4317 # For gRPC:
+    tls:
+      insecure: true # For local development, no TLS needed between collector and tempo
+
+  # ---- For Logs ----
+  loki: # Custom name for clarity, indicating OTLP HTTP to Loki
+    endpoint: "http://loki:3100/loki/api/v1/push" # Loki's OTLP HTTP endpoint
+    tls:
+      insecure: true # Suitable for local Docker Compose setup. Use proper TLS in production.
+    # headers: # Optional: if Loki requires authentication headers
+    #   "X-Scope-OrgID": "my-tenant-id" # Example for multi-tenant Loki
+    # retry_on_failure:
+    #   enabled: true
+    #   initial_interval: 5s
+    #   max_interval: 30s
+    #   max_elapsed_time: 5m
+    # queue_settings:
+    #   enabled: true
+    #   num_consumers: 2
+    #   queue_size: 5000
+
+extensions:
+  health_check:
+  # endpoint: 0.0.0.0:13133 # Default health check endpoint
+  pprof:
+  # endpoint: 0.0.0.0:1777 # For Go performance profiling
+  zpages:
+  # endpoint: 0.0.0.0:55679 # For diagnostics and troubleshooting
+
+service:
+  extensions: # No extensions needed for this basic setup
+  pipelines:
+    traces:
+      receivers: [ otlp ]
+      processors: [ memory_limiter, batch ]
+      exporters: [ debug, otlp/tempo ] # Add logging for debugging
+    metrics:
+      receivers: [ otlp ]
+      processors: [ memory_limiter, batch ]
+      exporters: [ prometheus ] # Add logging for debugging
+    logs:
+      receivers: [ otlp ]
+      processors: [ memory_limiter, batch ]
+      exporters: [ debug, loki ]
+
+  telemetry:
+    logs:
+      level: "info" # Collector's internal log level (debug, info, warn, error)
+    metrics:
+      level: "basic" # Collector's internal metric level (none, basic, normal, detailed)
+      address: "0.0.0.0:8888" # Endpoint for Collector's own Prometheus metrics
+
+
+#  doris loadbalancing mezmo opensearch prometheusremotewrite awscloudwatchlogs azuremonitor cassandra logzio rabbitmq stef
+#  awskinesis clickhouse opencensus prometheus pulsar sumologic syslog awss3 kafka sapm sentry splunk_hec awsemf azuredataexplorer carbon
+#  elasticsearch file googlecloud googlecloudpubsub loki alibabacloud_logservice datadog dataset influxdb otelarrow signalfx
+#  tencentcloud_logservice zipkin otlp googlemanagedprometheus debug otlphttp azureblob bmchelix coralogix faro logicmonitor honeycombmarker
+#  nop awsxray

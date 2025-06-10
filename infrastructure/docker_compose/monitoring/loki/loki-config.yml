@@ -1,0 +1,80 @@
+# In config/loki-config.yml
+auth_enabled: false # Disable authentication for local development
+
+server:
+  http_listen_port: 3100 # Default port for Loki HTTP API
+  grpc_listen_port: 9096
+  log_level: info
+  grpc_server_max_concurrent_streams: 1000
+
+common:
+  path_prefix: /loki
+#  storage:
+#    filesystem:
+#      chunks_directory: /loki/chunks # Directory for chunks
+#      rules_directory: /loki/rules # Directory for rules
+  replication_factor: 1 # Single instance, no replication
+  ring:
+    instance_addr: 127.0.0.1
+    kvstore:
+      store: inmemory # Use in-memory store for local development
+  storage:
+    s3:
+      endpoint: minio:9000
+      insecure: true
+      bucketnames: loki-data
+      access_key_id: loki
+      secret_access_key: supersecret
+      s3forcepathstyle: true
+
+ruler:
+  storage:
+    s3:
+      bucketnames: loki-ruler
+
+query_range:
+  results_cache:
+    cache:
+      embedded_cache:
+        enabled: true
+        max_size_mb: 100
+
+schema_config:
+  configs:
+    - from: 2023-01-01
+      store: tsdb
+      object_store: s3
+      schema: v13
+      index:
+        prefix: index_
+        period: 24h
+
+limits_config:
+  metric_aggregation_enabled: true
+
+#pattern_ingester:
+#  enabled: true
+#  metric_aggregation:
+#    loki_address: localhost:3100
+
+# OTLP ingestion is typically enabled by default on the HTTP port.
+# Explicit receiver config (if needed, though often not for default OTLP):
+# distributor:
+#   receivers:
+#     otlp:
+#       grpc_listen_port: 4317 # Loki can also receive OTLP gRPC directly
+#       http_listen_port: 4318 # Loki can also receive OTLP HTTP directly on a different port
+
+# This section is important for controlling which Otel resource attributes become indexed labels
+#limits_config:
+  # Default OTel resource attributes promoted to labels are usually sufficient.
+  # To add more, or customize:
+  # otel_resource_attributes_as_labels:
+  #   - deployment.environment
+  #   - custom.attribute
+  # Or, for Loki versions supporting it (check Loki documentation):
+  # default_resource_attributes_as_index_labels:
+  #   - "host.name"
+  #   - "another.otel.attribute"
+#  reject_old_samples: true   # Reject samples older than the configured max age
+#  reject_old_samples_max_age: 168h # 7 days, adjust as needed

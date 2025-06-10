@@ -134,6 +134,23 @@ services:
       file: common-config.yml
       service: microservices-gateway-config
 
+  messages:
+    image: messages:1.0
+    container_name: messages
+    ports:
+      - "8021:8021"
+    environment:
+      SPRING_APPLICATION_NAME: "messages"
+    healthcheck:
+      test: "curl --fail --silent localhost:8021/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    extends:
+      file: common-config.yml
+      service: network-config
+
 networks:
   network1:
     name: docker_network

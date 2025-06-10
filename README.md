@@ -4,6 +4,7 @@
 - accounts: 8001
 - cards: 8002
 - loans: 8003
+- messages: 8021
 - configserver: 8071
 - eurekaserver: 8761
 - gatewayserver: 8072

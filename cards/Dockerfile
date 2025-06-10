@@ -5,8 +5,7 @@ FROM eclipse-temurin:21-jdk
 WORKDIR /app
 
 # Copy the jar file
-COPY target/*.jar ./cards.jar
-COPY ./opentelemetry-javaagent.jar ./opentelemetry-javaagent.jar
+COPY build/libs/cards-1.0.0-SNAPSHOT.jar ./cards.jar
 
 # Expose the port the app runs on
 EXPOSE 8002

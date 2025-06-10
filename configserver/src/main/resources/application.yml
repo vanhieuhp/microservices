@@ -31,6 +31,8 @@ management:
     web:
       exposure:
         include: "*"
+    access:
+      default: UNRESTRICTED
   health:
     readiness-state:
       enabled: true
@@ -40,6 +42,16 @@ management:
     health:
       probes:
         enabled: true
+    shutdown:
+      access: unrestricted
+  info:
+    env:
+      enabled: true
+  tracing:
+    sampling:
+      probability: 1.0
+    propagation:
+      type: W3C
 
 encrypt:
   key: "encrypt-key-please-change-me"
@@ -50,3 +62,61 @@ server:
 logging:
   pattern:
     level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
+
+otel:
+  service:
+    name: ${spring.application.name}
+  resource:
+    attributes:
+      deployment.environment: ${SPRING_PROFILES_ACTIVE:dev}
+      service.version: ${project.version:1.0.0}
+      host.name: ${HOSTNAME:unknown}
+  exporter:
+    otlp:
+      endpoint: ${OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4317}
+      protocol: grpc
+      timeout: 10s
+      compression: gzip
+    logs:
+      exporter: otlp
+    traces:
+      exporter: otlp
+    metrics:
+      exporter: otlp
+  logs:
+    enabled: true
+  traces:
+    sampler: parentbased_always_on
+  bsp:
+    schedule:
+      delay: 5000
+    max:
+      queue:
+        size: 2048
+      export:
+        batch:
+          size: 512
+    export:
+      timeout: 30000
+  blrp:
+    schedule:
+      delay: 1000
+    max:
+      queue:
+        size: 2048
+      export:
+        batch:
+          size: 512
+    export:
+      timeout: 30000
+  bmep:
+    schedule:
+      delay: 10000
+    max:
+      queue:
+        size: 2048
+      export:
+        batch:
+          size: 512
+    export:
+      timeout: 30000

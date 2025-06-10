@@ -5,8 +5,7 @@ FROM eclipse-temurin:21-jdk
 WORKDIR /app
 
 # Copy the jar file
-COPY target/*.jar ./loans.jar
-COPY ./opentelemetry-javaagent.jar ./opentelemetry-javaagent.jar
+COPY build/libs/loans-1.0.0-SNAPSHOT.jar ./loans.jar
 
 # Expose the port the app runs on
 EXPOSE 8003

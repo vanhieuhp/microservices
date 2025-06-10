@@ -29,11 +29,13 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: password
       KEYCLOAK_PROFILE_FEATURE_UPLOAD_SCRIPTS: enabled
-    command: "start-dev --features=preview"
+    command: 
+    - "start-dev --features=preview"
+    - --import-realm
     volumes:
       - keycloak_data:/opt/keycloak/data/
-      - ./keycloak.conf:/opt/keycloak/conf/keycloak.conf
-      - ./exports:/opt/keycloak/bin/exports
+#      - ./keycloak.conf:/opt/keycloak/conf/keycloak.conf
+      - ./exports:/opt/keycloak/data/import
     networks:
       - "network1"
 

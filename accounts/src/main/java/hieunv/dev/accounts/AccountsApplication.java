@@ -16,6 +16,8 @@ import org.springframework.context.annotation.ComponentScans;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 
+import java.util.logging.Level;
+
 @OpenAPIDefinition(
         info = @Info(
                 title = "Accounts microservices REST API Documentation",
@@ -53,8 +55,16 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @EnableFeignClients(basePackages = {"hieunv.dev.accounts.service.client"})
 public class AccountsApplication {
 
+    private static final java.util.logging.Logger logger = java.util.logging.Logger.getLogger(AccountsApplication.class.getName());
+
     public static void main(String[] args) {
         SpringApplication.run(AccountsApplication.class, args);
+
+        logger.log(Level.SEVERE, "error log");
+        logger.log(Level.WARNING, "warning log");
+        logger.log(Level.INFO, "info log");
+        logger.log(Level.FINE, "debug log");
+        logger.log(Level.FINER, "trace log");
     }
 
 }

@@ -50,30 +50,23 @@ spring:
     username: "${RABBITMQ_USERNAME:guest}"
     password: "${RABBITMQ_PASSWORD:guest}"
     virtual-host: "${RABBITMQ_VIRTUAL_HOST:vh_host}"
+    connection-timeout: 10s
   cloud:
     openfeign:
       circuitbreaker:
         enabled: true
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-  health:
-    readiness-state:
-      enabled: true
-    liveness-state:
-      enabled: true
-  endpoint:
-    health:
-      probes:
-        enabled: true
-    shutdown:
-      access: unrestricted
-  info:
-    env:
-      enabled: true
+    function:
+      definition: updateCommunication
+    stream:
+      bindings:
+        updateCommunication-in-0:
+          destination: communication-sent
+          group: "${spring.application.name}"
+        sendCommunication-out-0:
+          destination: send-communication
+  logging:
+    pattern:
+      level: '%5p [${spring.application.name},%X{trace_id:-},%X{span_id:-},%threadName]'
 
 info:
   app:
@@ -90,13 +83,15 @@ eureka:
     serviceUrl:
       defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
 
-logging:
-  level:
-    hieunv:
-      dev:
-        accounts: DEBUG
-  pattern:
-    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
+#logging:
+#  level:
+#    hieunv:
+#      dev:
+#        accounts: INFO
+#  pattern:
+#    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
+
+
 
 resilience4j.circuitbreaker:
     configs:

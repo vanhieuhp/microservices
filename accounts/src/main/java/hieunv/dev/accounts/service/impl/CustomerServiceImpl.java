@@ -58,7 +58,7 @@ public class CustomerServiceImpl implements CustomerService {
         } catch (Exception e) {
             log.error("Error occurred while fetching loans details for mobileNumber: {} - {}", mobileNumber, e.getMessage());
         }
-
+        log.info("Customer details fetched successfully");
         return customerDetailsDto;
     }
 }

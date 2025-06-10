@@ -1,11 +1,14 @@
 services:
   base-config:
     environment:
-      - JAVA_TOOL_OPTIONS=-javaagent:/app/opentelemetry-javaagent.jar
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4317
-      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
-      - OTEL_METRICS_EXPORTER=none
-      - OTEL_LOGS_EXPORTER=none
+#      - JAVA_TOOL_OPTIONS=-javaagent:/app/opentelemetry-javaagent.jar
+#      - OTEL_EXPORTER_OTLP_ENDPOINT=http://tempo:4317
+#      - OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+#      - OTEL_METRICS_EXPORTER=none
+#      - OTEL_LOGS_EXPORTER=none
+      - OTLP_TRACING_ENDPOINT=http://otel-collector:4318/v1/traces
+      - OTLP_TRACING_ENABLED=true
+      - OTLP_METRICS_ENABLED=false
   resources-config:
     extends: base-config
     deploy:
@@ -45,6 +48,6 @@ services:
       DB_PORT: 3306
       DB_USER: root
       DB_PASSWORD: password
-      SPRING_PROFILES_ACTIVE: prod
+      SPRING_PROFILES_ACTIVE: default
       SPRING_CLOUD_CONFIG_URL: configserver:http://configserver:8071
       EUREKA_SERVER_URL: http://eurekaserver:8761/eureka/
