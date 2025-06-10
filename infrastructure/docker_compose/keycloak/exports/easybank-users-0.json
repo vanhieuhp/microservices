@@ -1,0 +1,55 @@
+{
+  "realm" : "easybank",
+  "users" : [ {
+    "id" : "d64a2d79-ce0a-440c-8dd5-beb3b09790ee",
+    "createdTimestamp" : 1749530946557,
+    "username" : "guest",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "Guest",
+    "lastName" : "User",
+    "email" : "guest@gmail.com",
+    "credentials" : [ {
+      "id" : "c157da78-fe1f-4cdd-8536-2c1ed5d940e9",
+      "type" : "password",
+      "userLabel" : "My password",
+      "createdDate" : 1749530958605,
+      "secretData" : "{\"value\":\"dlQa7w/dgIB8Cs0iSVO2CBNb2nM1GCR3Xh1JGsrBOVU=\",\"salt\":\"+zfZC5BQhHL43lderLSX6g==\",\"additionalParameters\":{}}",
+      "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
+    } ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "LOANS", "default-roles-easybank", "ACCOUNTS", "CARDS" ],
+    "notBefore" : 1749531418,
+    "groups" : [ ]
+  }, {
+    "id" : "09562ac5-a157-4bcb-af83-b28cbaa08814",
+    "createdTimestamp" : 1749531229935,
+    "username" : "service-account-easybank-callcenter-ac",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "serviceAccountClientId" : "easybank-callcenter-ac",
+    "credentials" : [ ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "default-roles-easybank" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  }, {
+    "id" : "027032f5-1b6d-4ed4-b4b3-1093c24881e7",
+    "createdTimestamp" : 1749523561305,
+    "username" : "service-account-easybank-callcenter-cc",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : false,
+    "serviceAccountClientId" : "easybank-callcenter-cc",
+    "credentials" : [ ],
+    "disableableCredentialTypes" : [ ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "LOANS", "default-roles-easybank", "ACCOUNTS", "CARDS" ],
+    "notBefore" : 0,
+    "groups" : [ ]
+  } ]
+}

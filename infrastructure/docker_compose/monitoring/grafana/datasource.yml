@@ -1,0 +1,34 @@
+apiVersion: 1
+
+deleteDatasources:
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    uid: prometheus
+    url: http://prometheus:9090
+    access: proxy
+    orgId: 1
+    basicAuth: true
+    basicAuthUser: admin
+    basicAuthPassword: password
+    isDefault: false
+    version: 1
+    editable: true
+    jsonData:
+      httpMethod: GET
+
+  - name: Tempo
+    type: tempo
+    uid: tempo
+    url: http://tempo:3100
+    access: proxy
+    orgId: 1
+    basicAuth: false
+    isDefault: false
+    version: 1
+    editable: true
+    jsonData:
+      httpMethod: GET
+      serviceMap:
+        datasourceUid: 'prometheus'

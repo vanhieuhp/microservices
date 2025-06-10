@@ -114,6 +114,7 @@ services:
     environment:
       SPRING_APPLICATION_NAME: "gatewayserver"
       OTEL_SERVICE_NAME: "gatewayserver"
+      OAUTH2_RESOURCE_SERVER_JWT_URI: http://keycloak:8015/realms/easybank/protocol/openid-connect/certs
     healthcheck:
       test: "curl --fail --silent localhost:8072/actuator/health/readiness | grep UP || exit 1"
       interval: 10s

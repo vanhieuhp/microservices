@@ -21,6 +21,12 @@ spring:
       host: localhost
       port: 6379
       timeout: 1s
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: "${OAUTH2_RESOURCE_SERVER_JWT_URI:http://localhost:8015/realms/easybank/protocol/openid-connect/certs}"
+
 
 management:
   endpoints:
@@ -50,9 +56,8 @@ info:
 
 logging:
   level:
-    hieunv:
-      dev:
-        gatewayserver: DEBUG
+    hieunv.dev.gatewayserver: DEBUG
+    org.springframework.security: DEBUG
   pattern:
     level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
 

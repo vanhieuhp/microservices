@@ -177,11 +177,11 @@ public class LoansController {
 
     @GetMapping("/contact-info")
     public ResponseEntity<LoansContactInfoDto> getContactInfo() {
-        log.debug("Contact Info: {}", loansContactInfoDto);
-        throw new RuntimeException("Error occur!");
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(loansContactInfoDto);
+//        log.debug("Contact Info: {}", loansContactInfoDto);
+//        throw new RuntimeException("Error occur!");
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(loansContactInfoDto);
     }
 
 }
