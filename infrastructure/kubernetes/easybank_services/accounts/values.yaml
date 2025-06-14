@@ -1,0 +1,30 @@
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+deploymentName: accounts-deployment
+serviceName: accounts
+appLabel: accounts
+appName: accounts
+
+replicaCount: 1
+
+image:
+  repository: vanhieuit10/easybank
+  tag: accounts
+
+containerPort: 8001
+
+service:
+  type: ClusterIP
+  port: 8001
+  targetPort: 8001
+
+is_config_server: false
+profile_enabled: true
+app_name_enabled: true
+config_enabled: true
+eureka_enabled: true
+resource_server_enabled: false
+rabbitmq_enabled: true
+mysql_enabled: true
+otel_enabled: true

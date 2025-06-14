@@ -18,40 +18,12 @@ spring:
           clone-on-start: true
           force-pull: true
           search-paths: infrastructure/config_properties
-
   rabbitmq:
     host: "${RABBITMQ_HOST:localhost}"
     port: "${RABBITMQ_PORT:5672}"
     username: "${RABBITMQ_USERNAME:guest}"
     password: "${RABBITMQ_PASSWORD:guest}"
     virtual-host: "${RABBITMQ_VIRTUAL_HOST:vh_host}"
-
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-    access:
-      default: UNRESTRICTED
-  health:
-    readiness-state:
-      enabled: true
-    liveness-state:
-      enabled: true
-  endpoint:
-    health:
-      probes:
-        enabled: true
-    shutdown:
-      access: unrestricted
-  info:
-    env:
-      enabled: true
-  tracing:
-    sampling:
-      probability: 1.0
-    propagation:
-      type: W3C
 
 encrypt:
   key: "encrypt-key-please-change-me"
@@ -78,11 +50,11 @@ otel:
       timeout: 10s
       compression: gzip
     logs:
-      exporter: otlp
+      exporter: ${OTEL_EXPORTER_LOGS_ENABLED:none}
     traces:
-      exporter: otlp
+      exporter: ${OTEL_EXPORTER_TRACES_ENABLED:none}
     metrics:
-      exporter: otlp
+      exporter: ${OTEL_EXPORTER_METRICS_ENABLED:none}
   logs:
     enabled: true
   traces:
@@ -120,3 +92,31 @@ otel:
           size: 512
     export:
       timeout: 30000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+    access:
+      default: UNRESTRICTED
+  health:
+    readiness-state:
+      enabled: true
+    liveness-state:
+      enabled: true
+  endpoint:
+    health:
+      probes:
+        enabled: true
+    shutdown:
+      access: unrestricted
+  info:
+    env:
+      enabled: true
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0  # Always sample traces (100%)
+    propagation:
+      type: w3c

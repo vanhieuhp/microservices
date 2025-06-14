@@ -40,3 +40,17 @@ publish:
 	@echo "Publish commonlib to maven local"
 	@cd commonlib && ./gradlew clean build -x test && ./gradlew publishToMavenLocal
 	@echo "Publish commonlib to maven local successfully!"
+
+tag:
+	@echo "Tag Docker images..."
+	@for service in $(GRADLE_SERVICES) $(MAVEN_SERVICES); do \
+		echo "-> Building Docker image for $$service"; \
+		docker tag $$service:1.0 vanhieuit10/easybank:$$service; \
+	done
+
+push:
+	@echo "Push Docker Image into Registry HUB..."
+	@for service in $(GRADLE_SERVICES) $(MAVEN_SERVICES); do \
+		echo "-> Building Docker image for $$service"; \
+		docker push vanhieuit10/easybank:$$service; \
+	done

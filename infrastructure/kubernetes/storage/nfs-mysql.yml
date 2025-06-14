@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-mysql-pv
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+  nfs:
+    path: /data/mysql
+    server: 192.111.33.102
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: nfs-storage
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-mysql-pvc
+spec:
+  accessModes:
+    - ReadWriteOnce  # Match the PV's access mode
+  resources:
+    requests:
+      storage: 10Gi  # Match or be less than the PV's capacity
+  volumeName: nfs-mysql-pv  # Bind directly to the PV
+  storageClassName: nfs-storage

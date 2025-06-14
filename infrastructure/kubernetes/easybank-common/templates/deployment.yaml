@@ -1,0 +1,137 @@
+{{- define "common.deployment" -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deploymentName }}
+  labels:
+    app: {{ .Values.appLabel }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.appLabel }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appLabel }}
+    spec:
+      containers:
+        - name: {{ .Values.appLabel }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag}}"
+          ports:
+            - containerPort: {{ .Values.containerPort }}
+              protocol: TCP
+          env:
+            {{- if .Values.app_name_enabled }}
+            - name: SPRING_APPLICATION_NAME
+              value: {{ .Values.appName }}
+            {{- end }}
+            {{- if .Values.is_config_server }}
+            - name: SPRING_PROFILES_ACTIVE
+              value: git
+            {{- end }}
+            {{- if .Values.profile_enabled }}
+            - name: SPRING_PROFILES_ACTIVE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.global.configMapName }}
+                  key: SPRING_PROFILES_ACTIVE
+            {{- end }}
+            {{- if .Values.config_enabled }}
+            - name: SPRING_CLOUD_CONFIG_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.global.configMapName }}
+                  key: SPRING_CLOUD_CONFIG_URL
+            {{- end }}
+            {{- if .Values.eureka_enabled }}
+            - name: EUREKA_SERVER_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.global.configMapName }}
+                  key: EUREKA_SERVER_URL
+            {{- end }}
+            {{- if .Values.resource_server_enabled }}
+            - name: OAUTH2_RESOURCE_SERVER_JWT_URI
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.global.configMapName }}
+                  key: OAUTH2_RESOURCE_SERVER_JWT_URI
+            {{- end }}
+
+            {{- if .Values.rabbitmq_enabled }}
+
+            # RabbitMQ
+            - name: RABBITMQ_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.global.configMapName }}
+                  key: RABBITMQ_HOST
+            - name: RABBITMQ_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.global.configMapName }}
+                  key: RABBITMQ_PORT
+            - name: RABBITMQ_USERNAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.global.configMapName }}
+                  key: RABBITMQ_USERNAME
+            - name: RABBITMQ_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.global.configMapName }}
+                  key: RABBITMQ_PASSWORD
+            - name: RABBITMQ_VIRTUAL_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.global.configMapName }}
+                  key: RABBITMQ_VIRTUAL_HOST
+            {{- end }}
+
+            # OpenTelemetry
+            - name: OTEL_EXPORTER_LOGS_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.global.configMapName }}
+                  key: OTEL_EXPORTER_LOGS_ENABLED
+            - name: OTEL_EXPORTER_TRACES_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.global.configMapName }}
+                  key: OTEL_EXPORTER_TRACES_ENABLED
+            - name: OTEL_EXPORTER_METRICS_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.global.configMapName }}
+                  key: OTEL_EXPORTER_METRICS_ENABLED
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.global.configMapName }}
+                  key: OTEL_EXPORTER_OTLP_ENDPOINT
+
+            {{- if .Values.mysql_enabled }}
+            # Mysql
+            - name: DB_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.global.configMapName }}
+                  key: MYSQL_HOST
+            - name: DB_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.global.configMapName }}
+                  key: MYSQL_PORT
+            - name: DB_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.global.configMapName }}
+                  key: MYSQL_USERNAME
+            - name: DB_PASSWORD
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Values.global.configMapName }}
+                  key: MYSQL_PASSWORD
+            {{- end }}
+{{- end -}}

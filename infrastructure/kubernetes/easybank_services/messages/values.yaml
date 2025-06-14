@@ -1,0 +1,26 @@
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+deploymentName: messages-deployment
+serviceName: messages
+appLabel: messages
+appName: messages
+
+replicaCount: 1
+
+image:
+  repository: vanhieuit10/easybank
+  tag: messages
+
+containerPort: 8021
+
+service:
+  type: ClusterIP
+  port: 8021
+  targetPort: 8021
+
+app_name_enabled: true
+profile_enabled: true
+config_enabled: true
+eureka_enabled: true
+resource_server_enabled: false

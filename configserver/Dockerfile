@@ -5,7 +5,7 @@ FROM eclipse-temurin:21-jdk
 WORKDIR /app
 
 # Copy the jar file
-COPY build/libs/configserver-0.0.1-SNAPSHOT.jar ./configserver.jar
+COPY build/libs/configserver-1.0.0-SNAPSHOT.jar ./configserver.jar
 
 # Expose the port the app runs on
 EXPOSE 8071

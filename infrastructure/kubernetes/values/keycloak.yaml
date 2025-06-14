@@ -1,0 +1,28 @@
+# values.yaml
+auth:
+  adminUser: admin
+  adminPassword: admin
+service:
+  type: LoadBalancer
+  port: 80
+  annotations:
+    metallb.universe.tf/address-pool: default
+postgresql:
+  enabled: true
+  auth:
+    username: bn_keycloak
+    password: bn_keycloak
+    database: bitnami_keycloak
+#extraEnvVars:
+#  - name: KC_PRODUCTION
+#    value: "true"
+#  - name: KC_HOSTNAME_STRICT
+#    value: "false"
+#  - name: KC_HTTP_ENABLED
+#    value: "true"
+metrics:
+  enabled: false
+
+global:
+  defaultStorageClass: "nfs-storage"
+  storageClass: "nfs-storage"

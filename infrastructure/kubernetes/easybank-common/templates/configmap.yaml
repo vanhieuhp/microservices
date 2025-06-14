@@ -1,0 +1,31 @@
+{{- define "common.configmap" -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.global.configMapName }}
+data:
+  SPRING_PROFILES_ACTIVE: {{ .Values.global.activeProfile | quote }}
+  SPRING_CLOUD_CONFIG_URL: {{ .Values.global.configServerURL | quote }}
+  EUREKA_SERVER_URL: {{ .Values.global.eurekaServerURL | quote }}
+  OAUTH2_RESOURCE_SERVER_JWT_URI: {{ .Values.global.keycloakURL | quote }}
+
+  # RabbitMQ
+  RABBITMQ_HOST: {{ .Values.global.rabbitmq.host | quote }}
+  RABBITMQ_PORT: {{ .Values.global.rabbitmq.port | quote }}
+  RABBITMQ_USERNAME: {{ .Values.global.rabbitmq.username | quote }}
+  RABBITMQ_PASSWORD: {{ .Values.global.rabbitmq.password | quote }}
+  RABBITMQ_VIRTUAL_HOST: {{ .Values.global.rabbitmq.virtualHost | quote }}
+
+  # OpenTelemetry
+  OTEL_EXPORTER_LOGS_ENABLED: {{ .Values.global.otel.exporter.logsEnabled | quote }}
+  OTEL_EXPORTER_TRACES_ENABLED: {{ .Values.global.otel.exporter.tracesEnabled | quote }}
+  OTEL_EXPORTER_METRICS_ENABLED: {{ .Values.global.otel.exporter.metricsEnabled | quote }}
+  OTEL_EXPORTER_OTLP_ENDPOINT: {{ .Values.global.otel.exporter.otlpEndpoint | quote }}
+
+  # Mysql
+  MYSQL_HOST: {{ .Values.global.mysql.host | quote }}
+  MYSQL_PORT: {{ .Values.global.mysql.port | quote }}
+  MYSQL_USERNAME: {{ .Values.global.mysql.username | quote }}
+  MYSQL_PASSWORD: {{ .Values.global.mysql.password | quote }}
+
+{{- end -}}

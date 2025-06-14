@@ -1,0 +1,29 @@
+global:
+  configMapName: easybankdev-configmap
+  activeProfile: default
+  configServerURL: optional:configserver:http://configserver:8071/
+  eurekaServerURL: http://eurekaserver:8761/eureka/
+  keycloakURL: http://192.111.33.101:8015/realms/master/protocol/openid-connect/certs
+
+  # RabbitMQ
+  rabbitmq:
+    host: "192.111.33.101"
+    port: "5672"
+    username: "guest"
+    password: "guest"
+    virtualHost: "vh_host"
+
+  # OpenTelemetry
+  otel:
+    exporter:
+      logsEnabled: otlp
+      tracesEnabled: otlp
+      metricsEnabled: otlp
+      otlpEndpoint: http://192.111.33.101:4317
+
+  # Mysql
+  mysql:
+    host: "192.111.33.101"
+    port: "3306"
+    username: "root"
+    password: "password"

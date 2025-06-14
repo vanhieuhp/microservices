@@ -1,0 +1,22 @@
+architecture: replication
+
+auth:
+  enabled: true
+  password: "password"
+
+master:
+  persistence:
+    enabled: true
+    existingClaim: nfs-redis-pvc
+    size: 3Gi
+
+replica:
+  replicaCount: 0
+  persistence:
+    enabled: true
+    existingClaim: nfs-redis-pvc
+    size: 3Gi
+
+sentinel:
+  enabled: false
+  replicas: 2

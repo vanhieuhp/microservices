@@ -1,0 +1,30 @@
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+deploymentName: gatewayserver-deployment
+serviceName: gatewayserver
+appLabel: gatewayserver
+appName: gatewayserver
+
+replicaCount: 1
+
+image:
+  repository: vanhieuit10/easybank
+  tag: gatewayserver
+
+containerPort: 8072
+
+service:
+  type: ClusterIP
+  port: 8072
+  targetPort: 8072
+
+is_config_server: false
+profile_enabled: true
+app_name_enabled: true
+config_enabled: true
+eureka_enabled: true
+resource_server_enabled: true
+rabbitmq_enabled: false
+mysql_enabled: false
+otel_enabled: true
