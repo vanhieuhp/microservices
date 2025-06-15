@@ -17,6 +17,7 @@ spec:
     spec:
       containers:
         - name: {{ .Values.appLabel }}
+          imagePullPolicy: Always
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag}}"
           ports:
             - containerPort: {{ .Values.containerPort }}
@@ -44,12 +45,12 @@ spec:
                   name: {{ .Values.global.configMapName }}
                   key: SPRING_CLOUD_CONFIG_URL
             {{- end }}
-            {{- if .Values.eureka_enabled }}
-            - name: EUREKA_SERVER_URL
+            {{- if .Values.discovery_enabled }}
+            - name: SPRING.CLOUD.KUBERNETES.DISCOVERY.DISCOVERY-SERVER-URL
               valueFrom:
                 configMapKeyRef:
                   name: {{ .Values.global.configMapName }}
-                  key: EUREKA_SERVER_URL
+                  key: SPRING.CLOUD.KUBERNETES.DISCOVERY.DISCOVERY-SERVER-URL
             {{- end }}
             {{- if .Values.resource_server_enabled }}
             - name: OAUTH2_RESOURCE_SERVER_JWT_URI

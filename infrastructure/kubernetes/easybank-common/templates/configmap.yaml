@@ -5,8 +5,8 @@ metadata:
   name: {{ .Values.global.configMapName }}
 data:
   SPRING_PROFILES_ACTIVE: {{ .Values.global.activeProfile | quote }}
+  SPRING.CLOUD.KUBERNETES.DISCOVERY.DISCOVERY-SERVER-URL: {{ .Values.global.discoveryServerURL | quote }}
   SPRING_CLOUD_CONFIG_URL: {{ .Values.global.configServerURL | quote }}
-  EUREKA_SERVER_URL: {{ .Values.global.eurekaServerURL | quote }}
   OAUTH2_RESOURCE_SERVER_JWT_URI: {{ .Values.global.keycloakURL | quote }}
 
   # RabbitMQ

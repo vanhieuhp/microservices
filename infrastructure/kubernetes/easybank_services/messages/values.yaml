@@ -22,5 +22,5 @@ service:
 app_name_enabled: true
 profile_enabled: true
 config_enabled: true
-eureka_enabled: true
+discovery_enabled: true
 resource_server_enabled: false

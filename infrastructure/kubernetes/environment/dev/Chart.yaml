@@ -26,15 +26,15 @@ appVersion: "1.0.0"
 dependencies:
   - name: easybank-common
     version: 0.1.0
-    repository: file://../easybank-common
+    repository: file://../../easybank-common
 
   - name: configserver
     version: 0.1.0
     repository: file://../../easybank_services/configserver
 
-  - name: eurekaserver
-    version: 0.1.0
-    repository: file://../../easybank_services/eurekaserver
+#  - name: eurekaserver
+#    version: 0.1.0
+#    repository: file://../../easybank_services/eurekaserver
 
   - name: gatewayserver
     version: 0.1.0

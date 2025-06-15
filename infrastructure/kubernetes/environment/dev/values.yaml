@@ -2,8 +2,8 @@ global:
   configMapName: easybankdev-configmap
   activeProfile: default
   configServerURL: optional:configserver:http://configserver:8071/
-  eurekaServerURL: http://eurekaserver:8761/eureka/
   keycloakURL: http://192.111.33.101:8015/realms/master/protocol/openid-connect/certs
+  discoveryServerURL: "http://spring-cloud-kubernetes-discoveryserver:80/"
 
   # RabbitMQ
   rabbitmq:

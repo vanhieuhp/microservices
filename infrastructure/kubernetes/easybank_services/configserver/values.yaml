@@ -23,7 +23,7 @@ is_config_server: true
 app_name_enabled: true
 profile_enabled: false
 config_enabled: false
-eureka_enabled: false
+discovery_enabled: false
 resource_server_enabled: false
 rabbitmq_enabled: true
 mysql_enabled: false
