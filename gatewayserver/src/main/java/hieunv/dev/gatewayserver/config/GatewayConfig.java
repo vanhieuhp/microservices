@@ -29,7 +29,7 @@ public class GatewayConfig {
                                 .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
                                 .circuitBreaker(config -> config.setName("accountsCircuitBreaker")
                                         .setFallbackUri("forward:/fallback/contact-support")))
-                        .uri("lb://ACCOUNTS"))
+                        .uri("http://accounts:8001"))
                 .route(p -> p
                         .path("/easybank/cards/**")
                         .filters(f -> f.rewritePath("/easybank/cards/(?<segment>.*)", "/${segment}")
@@ -39,7 +39,7 @@ public class GatewayConfig {
                                         .setKeyResolver(userKeyResolver())
                                 )
                         )
-                        .uri("lb://CARDS"))
+                        .uri("http://cards:8002"))
                 .route(p -> p
                         .path("/easybank/loans/**")
                         .filters(f -> f.rewritePath("/easybank/loans/(?<segment>.*)", "/${segment}")
@@ -48,7 +48,7 @@ public class GatewayConfig {
                                         .setRetries(3)
                                         .setMethods(HttpMethod.GET)
                                         .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true)))
-                        .uri("lb://LOANS"))
+                        .uri("http://cards:8003"))
                 .build();
     }
 

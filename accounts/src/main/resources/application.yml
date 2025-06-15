@@ -52,6 +52,9 @@ spring:
     virtual-host: "${RABBITMQ_VIRTUAL_HOST:vh_host}"
     connection-timeout: 10s
   cloud:
+    kubernetes:
+      discovery:
+        all-namespaces: true
     openfeign:
       circuitbreaker:
         enabled: true
@@ -74,14 +77,14 @@ info:
     description: "Easy Bank Accounts Application"
     version: "1.0.0"
 
-eureka:
-  instance:
-    prefer-ip-address: true
-  client:
-    fetchRegistry: true
-    registerWithEureka: true
-    serviceUrl:
-      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
+#eureka:
+#  instance:
+#    prefer-ip-address: true
+#  client:
+#    fetchRegistry: true
+#    registerWithEureka: true
+#    serviceUrl:
+#      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
 
 #logging:
 #  level:

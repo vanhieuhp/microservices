@@ -7,6 +7,9 @@ spring:
   config:
     import: "${SPRING_CLOUD_CONFIG_URL:optional:configserver:http://localhost:8071/}"
   cloud:
+    kubernetes:
+      discovery:
+        all-namespaces: true
     gateway:
       discovery:
         locator:
@@ -48,3 +51,12 @@ resilience4j:
         permittedNumberOfCallsInHalfOpenState: 2
         failureRateThreshold: 50
         waitDurationInOpenState: 10000
+
+#eureka:
+#  instance:
+#    preferIpAddress: true
+#  client:
+#    registerWithEureka: true
+#    fetchRegistry: true
+#    serviceUrl:
+#      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
