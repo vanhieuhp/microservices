@@ -16,8 +16,8 @@ java {
 
 ext {
     set("springCloudVersion", "2024.0.1")
-    set("openTelemetryVersion", "2.16.0")
-    set("logbackAppenderVersion", "2.10.0-alpha")
+//    set("openTelemetryVersion", "2.16.0")
+//    set("logbackAppenderVersion", "2.10.0-alpha")
 }
 
 repositories {
@@ -32,18 +32,21 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-    implementation(platform("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom:2.10.0"))
+//    implementation(platform("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom:2.10.0"))
 
-    implementation("io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter")
-    implementation("io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0:2.10.0-alpha")
-    implementation("io.opentelemetry:opentelemetry-api")
-    implementation("io.opentelemetry:opentelemetry-sdk")
-    implementation("io.opentelemetry:opentelemetry-sdk-extension-autoconfigure")
-    implementation("io.opentelemetry:opentelemetry-exporter-otlp")
-    implementation("io.opentelemetry:opentelemetry-sdk-metrics")
-    implementation("io.opentelemetry.instrumentation:opentelemetry-logback-mdc-1.0:2.10.0-alpha")
-    implementation("io.opentelemetry:opentelemetry-extension-trace-propagators")
-    implementation("io.micrometer:micrometer-tracing-bridge-otel")
+//    implementation("io.opentelemetry.instrumentation:opentelemetry-spring-boot-starter")
+//    implementation("io.opentelemetry.instrumentation:opentelemetry-logback-appender-1.0:2.10.0-alpha")
+//    implementation("io.opentelemetry:opentelemetry-api")
+//    implementation("io.opentelemetry:opentelemetry-sdk")
+//    implementation("io.opentelemetry:opentelemetry-sdk-extension-autoconfigure")
+//    implementation("io.opentelemetry:opentelemetry-exporter-otlp")
+//    implementation("io.opentelemetry:opentelemetry-sdk-metrics")
+//    implementation("io.opentelemetry.instrumentation:opentelemetry-logback-mdc-1.0:2.10.0-alpha")
+//    implementation("io.opentelemetry:opentelemetry-extension-trace-propagators")
+//    implementation("io.micrometer:micrometer-tracing-bridge-otel")
+
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
 
 publishing {
@@ -61,3 +64,6 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+tasks.withType(GenerateModuleMetadata) {
+    suppressedValidationErrors.add('dependencies-without-versions')
+}

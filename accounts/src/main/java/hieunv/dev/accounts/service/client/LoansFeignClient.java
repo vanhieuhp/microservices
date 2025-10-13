@@ -7,7 +7,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 
-@FeignClient(name = "loans", url = "http://loans:8003", fallback = LoansFallback.class)
+//@FeignClient(name = "loans", url = "http://loans:8003", fallback = LoansFallback.class) // use for k8s
+@FeignClient(name = "loans", fallback = LoansFallback.class) // use for eureka
 public interface LoansFeignClient {
 
     @GetMapping(value = "/api/fetch", consumes = "application/json")
