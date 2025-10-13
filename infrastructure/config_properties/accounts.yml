@@ -68,30 +68,30 @@ accounts:
 #    export:
 #      timeout: 30000
 #
-#management:
-#  endpoints:
-#    web:
-#      exposure:
-#        include: "*"
-#    access:
-#      default: UNRESTRICTED
-#  health:
-#    readiness-state:
-#      enabled: true
-#    liveness-state:
-#      enabled: true
-#  endpoint:
-#    health:
-#      probes:
-#        enabled: true
-#    shutdown:
-#      access: unrestricted
-#  info:
-#    env:
-#      enabled: true
-#  tracing:
-#    enabled: true
-#    sampling:
-#      probability: 1.0  # Always sample traces (100%)
-#    propagation:
-#      type: w3c
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+    access:
+      default: UNRESTRICTED
+  health:
+    readiness-state:
+      enabled: true
+    liveness-state:
+      enabled: true
+  endpoint:
+    health:
+      probes:
+        enabled: true
+    shutdown:
+      access: unrestricted
+  info:
+    env:
+      enabled: true
+  tracing:
+    enabled: true
+    sampling:
+      probability: 1.0  # Always sample traces (100%)
+    propagation:
+      type: w3c
