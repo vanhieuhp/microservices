@@ -15,7 +15,7 @@ public class AccountFunctions {
 
     private static final Logger log = LoggerFactory.getLogger(AccountFunctions.class);
 
-    @Bean
+//    @Bean
 //    public Function<Long, Long> updateCommunication(AccountService accountService) {
 //        return accountNumber -> {
 //            log.info("Updating communication for account number: {}", accountNumber);
@@ -23,10 +23,10 @@ public class AccountFunctions {
 //            return accountNumber;
 //        };
 //    }
-    public Consumer<Long> updateCommunication(AccountService accountService) {
-        return accountNumber -> {
-            log.info("Updating communication for account number: {}", accountNumber);
-            accountService.updateCommunication(accountNumber);
-        };
-    }
+//    public Consumer<Long> updateCommunication(AccountService accountService) {
+//        return accountNumber -> {
+//            log.info("Updating communication for account number: {}", accountNumber);
+//            accountService.updateCommunication(accountNumber);
+//        };
+//    }
 }

@@ -1,24 +1,33 @@
 package hieunv.dev.accounts.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "customer")
-@Getter @Setter @ToString
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class Customer extends BaseEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "customer_id")
     private Long customerId;
 
+    @Column(name = "name")
     private String name;
 
+    @Column(name = "email")
     private String email;
 
     @Column(name = "mobile_number")
     private String mobileNumber;
+
+    @Column(name = "active_sw")
+    private boolean activeSw = false;
 }

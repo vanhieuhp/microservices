@@ -1,5 +1,7 @@
 package hieunv.dev.accounts.service.impl;
 
+import hieunv.dev.accounts.command.event.CustomerUpdatedEvent;
+import hieunv.dev.accounts.constants.CustomerConstants;
 import hieunv.dev.accounts.dto.AccountDto;
 import hieunv.dev.accounts.dto.CardsDto;
 import hieunv.dev.accounts.dto.CustomerDetailsDto;
@@ -16,8 +18,11 @@ import hieunv.dev.accounts.service.client.CardsFeignClient;
 import hieunv.dev.accounts.service.client.LoansFeignClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.BeanUtils;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Log4j2
 @Service
@@ -35,8 +40,8 @@ public class CustomerServiceImpl implements CustomerService {
                 () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
         );
 
-        Account account = accountRepository.findByCustomerId(customer.getCustomerId()).orElseThrow(
-                () -> new ResourceNotFoundException("Account", "customerId", customer.getCustomerId().toString())
+        Account account = accountRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                () -> new ResourceNotFoundException("Account", "mobileNumber", mobileNumber)
         );
 
         CustomerDetailsDto customerDetailsDto = CustomerMapper.mapToCustomerDetailDto(customer, new CustomerDetailsDto());
@@ -65,9 +70,44 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerDto fetchCustomer(String mobileNumber) {
-        Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
+        Customer customer = customerRepository.findByMobileNumberAndActiveSw(mobileNumber, CustomerConstants.ACTIVE_SW).orElseThrow(
                 () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
         );
-        return CustomerMapper.mapToCustomerDto(customer, new CustomerDto());
+        CustomerDto customerDto = new CustomerDto();
+        BeanUtils.copyProperties(customer, customerDto);
+
+        return customerDto;
+
+    }
+
+    @Override
+    public void createCustomer(Customer customer) {
+        Optional<Customer> existingCustomer = customerRepository.findByMobileNumberAndActiveSw(customer.getMobileNumber(), CustomerConstants.ACTIVE_SW);
+        if (existingCustomer.isPresent()) {
+            throw new IllegalArgumentException("Customer with mobile number " + customer.getMobileNumber() + " already exists.");
+        }
+        customerRepository.save(customer);
+        log.info("Customer created successfully");
+    }
+
+    @Override
+    public boolean updateCustomer(CustomerUpdatedEvent customerUpdatedEvent) {
+        Customer customer = customerRepository.findByMobileNumberAndActiveSw(customerUpdatedEvent.getMobileNumber(), true)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer", "customerId", customerUpdatedEvent.getCustomerId().toString()));
+        CustomerMapper.mapEventToCustomer(customerUpdatedEvent, customer);
+        customerRepository.save(customer);
+        log.info("Customer updated successfully");
+        return true;
+    }
+
+    @Override
+    public boolean deleteCustomer(Long customerId) {
+        Customer customer = customerRepository.findById(customerId).orElseThrow(
+                () -> new ResourceNotFoundException("Customer", "customerId", customerId.toString())
+        );
+        customer.setActiveSw(CustomerConstants.IN_ACTIVE_SW);
+        customerRepository.save(customer);
+        log.info("Customer deleted successfully");
+        return true;
     }
 }

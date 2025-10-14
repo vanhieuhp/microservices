@@ -42,14 +42,14 @@ import java.util.logging.Level;
 @EnableJpaAuditing(auditorAwareRef = "auditAwareImpl")
 @SpringBootApplication
 @ComponentScans({
-        @ComponentScan("hieunv.dev.accounts.controller"),
-        @ComponentScan("hieunv.dev.accounts.service"),
-        @ComponentScan("hieunv.dev.accounts.exception"),
-        @ComponentScan("hieunv.dev.accounts.audit"),
-        @ComponentScan("hieunv.dev.accounts.config"),
+        @ComponentScan("hieunv.dev.accounts.*"),
 })
 @EnableJpaRepositories({"hieunv.dev.accounts.repository"})
-@EntityScan({"hieunv.dev.accounts.entity"})
+@EntityScan({
+        "hieunv.dev.accounts.entity",
+        "org.axonframework.eventhandling.tokenstore.jpa",  // Axon JPA Token Store entities
+        "org.axonframework.modelling.saga.repository.jpa"  // Axon JPA Saga Store entities
+})
 @EnableConfigurationProperties(value = {
         AccountsContactInfoDto.class
 })

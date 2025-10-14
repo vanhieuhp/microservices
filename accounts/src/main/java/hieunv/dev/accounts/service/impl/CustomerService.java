@@ -1,7 +1,10 @@
 package hieunv.dev.accounts.service.impl;
 
+import hieunv.dev.accounts.command.event.CustomerUpdatedEvent;
 import hieunv.dev.accounts.dto.CustomerDetailsDto;
 import hieunv.dev.accounts.dto.CustomerDto;
+import hieunv.dev.accounts.entity.Customer;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 
 public interface CustomerService {
@@ -16,4 +19,10 @@ public interface CustomerService {
 
     CustomerDto fetchCustomer(@Pattern(regexp="(^$|[0-9]{10})",
             message = "Mobile number must be 10 digits") String mobileNumber);
+
+    void createCustomer(Customer customer);
+
+    boolean updateCustomer(CustomerUpdatedEvent customerUpdatedEvent);
+
+    boolean deleteCustomer(Long customerId);
 }

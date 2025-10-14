@@ -1,5 +1,5 @@
 plugins {
-    id 'java'
+    id 'java-library'
     id 'org.springframework.boot' version "${springBootVersion}"
     id 'io.spring.dependency-management' version "${springDependencyManagementVersion}"
     id 'maven-publish'
@@ -25,12 +25,12 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter'
+    api 'org.springframework.boot:spring-boot-starter'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    api 'org.springframework.boot:spring-boot-starter-web'
+    api 'org.springframework.boot:spring-boot-starter-actuator'
 
 //    implementation(platform("io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom:2.10.0"))
 
@@ -47,6 +47,24 @@ dependencies {
 
     compileOnly 'org.projectlombok:lombok:1.18.30'
     annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
+    // https://mvnrepository.com/artifact/org.axonframework/axon-server-connector
+//    api 'org.axonframework:axon-server-connector:4.12.1'
+//    api 'org.axonframework:axon-bom:4.12.1'
+
+    // https://mvnrepository.com/artifact/org.axonframework/axon-spring-boot-starter
+    // Use 'api' to expose Axon Framework to consuming projects
+    api 'org.axonframework:axon-spring-boot-starter:4.12.1'
+}
+
+// Disable bootJar for library projects
+tasks.named('bootJar') {
+    enabled = false
+}
+
+// Enable plain jar for library publishing
+tasks.named('jar') {
+    enabled = true
 }
 
 publishing {

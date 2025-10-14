@@ -16,4 +16,9 @@ public class AccountDto {
 
     @NotEmpty(message = "BranchAddress can not be a null or empty")
     private String branchAddress;
+
+    @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
+    private String mobileNumber;
+
+    private boolean activeSw = false;
 }

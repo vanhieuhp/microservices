@@ -1,0 +1,26 @@
+name: "axonserver"
+
+#  docker run -d --name axonserver \
+#  -p 8024:8024 -p 8124:8124 \
+#  -v "./data":/axonserver/data \
+#  -v "./logs":/axonserver/logs \
+#  -v "./config":/axonserver/config \
+#  --restart unless-stopped \
+#  axoniq/axonserver:latest
+services:
+  axonserver:
+    image: axoniq/axonserver:latest
+    container_name: axonserver
+    ports:
+      - "8024:8024"
+      - "8124:8124"
+    volumes:
+      - axonserver_data:/axonserver/data
+      - axonserver_events:/axonserver/events
+      - ./config:/axonserver/config
+    restart: unless-stopped
+
+volumes:
+  axonserver_data:
+  axonserver_events:
+
