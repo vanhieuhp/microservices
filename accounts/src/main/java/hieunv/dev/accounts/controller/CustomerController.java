@@ -1,6 +1,7 @@
 package hieunv.dev.accounts.controller;
 
 import hieunv.dev.accounts.dto.CustomerDetailsDto;
+import hieunv.dev.accounts.dto.CustomerDto;
 import hieunv.dev.accounts.dto.ErrorResponseDto;
 import hieunv.dev.accounts.service.impl.CustomerService;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,7 +16,11 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @Log4j2
 @Tag(
@@ -52,5 +57,16 @@ public class CustomerController {
         CustomerDetailsDto cardsDto = customerService.fetchCustomerDetails(mobileNumber, correlationId);
         log.debug("fetchCustomerDetails method end");
         return ResponseEntity.status(HttpStatus.OK).body(cardsDto);
+    }
+
+    @GetMapping("/fetch")
+    public ResponseEntity<CustomerDto> fetchCustomer(@RequestParam
+                                                     @Pattern(regexp="(^$|[0-9]{10})",
+                                                             message = "Mobile number must be 10 digits")
+                                                     String mobileNumber) {
+        CustomerDto customerDto = customerService.fetchCustomer(mobileNumber);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(customerDto);
     }
 }

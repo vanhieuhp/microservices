@@ -7,10 +7,10 @@ spring:
   config:
     import: "${SPRING_CLOUD_CONFIG_URL:optional:configserver:http://localhost:8071/}"
   cloud:
-    kubernetes:
-      discovery:
-        enabled: true
-        all-namespaces: true
+    #    kubernetes:
+    #      discovery:
+    #        enabled: true
+    #        all-namespaces: true
     discovery:
       client:
         health-indicator:
@@ -41,12 +41,20 @@ info:
     description: "EasyBank Gateway Server Application"
     version: "1.0.0"
 
+#logging:
+#  level:
+#    hieunv.dev.gatewayserver: DEBUG
+#    org.springframework.security: DEBUG
+#  pattern:
+#    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
+
 logging:
   level:
+    root: INFO
+    org.springframework.web: DEBUG
+    org.springframework.cloud.gateway: DEBUG
     hieunv.dev.gatewayserver: DEBUG
     org.springframework.security: DEBUG
-  pattern:
-    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
 
 resilience4j:
   circuitbreaker:
@@ -57,11 +65,14 @@ resilience4j:
         failureRateThreshold: 50
         waitDurationInOpenState: 10000
 
-#eureka:
-#  instance:
-#    preferIpAddress: true
-#  client:
-#    registerWithEureka: true
-#    fetchRegistry: true
-#    serviceUrl:
-#      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
+eureka:
+  instance:
+    preferIpAddress: true
+  client:
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: ${EUREKA_SERVER_URL:http://localhost:8761/eureka/}
+
+app:
+  base-url: http://localhost:8072

@@ -1,6 +1,7 @@
 package hieunv.dev.accounts.controller;
 
 import hieunv.dev.accounts.constants.AccountConstants;
+import hieunv.dev.accounts.dto.AccountDto;
 import hieunv.dev.accounts.dto.AccountsContactInfoDto;
 import hieunv.dev.accounts.dto.CustomerDto;
 import hieunv.dev.accounts.dto.ErrorResponseDto;
@@ -56,11 +57,11 @@ public class AccountController {
     }
 
     @GetMapping("/fetch")
-    public ResponseEntity<CustomerDto> getAccount(@RequestParam String mobileNumber) {
-        CustomerDto customerDto = accountService.fetchAccount(mobileNumber);
+    public ResponseEntity<AccountDto> getAccount(@RequestParam String mobileNumber) {
+        AccountDto accountDto = accountService.fetchAccount(mobileNumber);
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(customerDto);
+                .body(accountDto);
     }
 
     @ApiResponses(value = {

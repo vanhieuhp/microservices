@@ -3,6 +3,7 @@ package hieunv.dev.accounts.service.impl;
 import hieunv.dev.accounts.dto.AccountDto;
 import hieunv.dev.accounts.dto.CardsDto;
 import hieunv.dev.accounts.dto.CustomerDetailsDto;
+import hieunv.dev.accounts.dto.CustomerDto;
 import hieunv.dev.accounts.dto.LoansDto;
 import hieunv.dev.accounts.entity.Account;
 import hieunv.dev.accounts.entity.Customer;
@@ -60,5 +61,13 @@ public class CustomerServiceImpl implements CustomerService {
         }
         log.info("Customer details fetched successfully");
         return customerDetailsDto;
+    }
+
+    @Override
+    public CustomerDto fetchCustomer(String mobileNumber) {
+        Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
+        );
+        return CustomerMapper.mapToCustomerDto(customer, new CustomerDto());
     }
 }

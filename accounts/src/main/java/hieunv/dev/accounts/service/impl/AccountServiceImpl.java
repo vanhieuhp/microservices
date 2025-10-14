@@ -54,7 +54,7 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public CustomerDto fetchAccount(String mobileNumber) {
+    public AccountDto fetchAccount(String mobileNumber) {
         Customer customer = customerRepository.findByMobileNumber(mobileNumber).orElseThrow(
                 () -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumber)
         );
@@ -63,10 +63,7 @@ public class AccountServiceImpl implements AccountService {
                 () -> new ResourceNotFoundException("Account", "customerId", customer.getCustomerId().toString())
         );
 
-        CustomerDto customerDto = CustomerMapper.mapToCustomerDto(customer, new CustomerDto());
-        AccountDto accountDto = AccountMapper.mapToAccountDto(account, new AccountDto());
-        customerDto.setAccountDto(accountDto);
-        return customerDto;
+        return AccountMapper.mapToAccountDto(account, new AccountDto());
     }
 
     @Override
