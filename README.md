@@ -178,3 +178,6 @@ To customize the deployment, you can:
 - Ensure that all required databases (MySQL, RabbitMQ, Redis) are running and accessible.
 - For more detailed information on the infrastructure, refer to the `infrastructure/README.md` file.
 - When using Helm, make sure to review and adjust the resource limits and requests in the values.yaml files according to your cluster's capacity.
+
+## breaking Changes
+CONVERT PROJECT TO USE FOR ANOTHER PURPOSE(SAGA PATTERN)
