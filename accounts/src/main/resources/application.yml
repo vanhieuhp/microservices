@@ -29,8 +29,8 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect # Use MySQL8Dialect if you're on MySQL 8.x
     hibernate:
-      ddl-auto: none
-    show-sql: true
+      ddl-auto: update
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -122,3 +122,20 @@ resilience4j.ratelimiter:
         timeout-duration: 1000
         limit-refresh-period: 5000
         limit-for-period: 1
+
+axon:
+  axonserver:
+    servers: localhost:8124
+#  serializer:
+#    general: jackson
+#    events: jackson
+#    messages: jackson
+#  eventhandling:
+#    processors:
+#      # Configure default error handling and processing mode
+#      default:
+#        mode: tracking
+#        source: eventStore
+#  # Disable update checker to avoid the RejectedExecutionException
+  updates:
+    enabled: false

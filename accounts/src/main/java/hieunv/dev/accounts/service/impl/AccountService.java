@@ -1,18 +1,14 @@
 package hieunv.dev.accounts.service.impl;
 
 import hieunv.dev.accounts.dto.AccountDto;
-import hieunv.dev.accounts.dto.CustomerDto;
 
 public interface AccountService {
 
-    /**
-     * @param customerDto - CustomerDto object
-     * */
-    void createAccount(CustomerDto customerDto);
+    void createAccount(String mobileNumber);
 
     AccountDto fetchAccount(String mobileNumber);
 
-    boolean updateAccount(CustomerDto customerDto);
+    boolean updateAccount(AccountDto accountDto);
 
     boolean deleteAccount(String mobileNumber);
 

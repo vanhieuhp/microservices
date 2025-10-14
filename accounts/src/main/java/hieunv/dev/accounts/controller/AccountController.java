@@ -49,8 +49,8 @@ public class AccountController {
             description = "Account created successfully"
     )
     @PostMapping("/create")
-    public ResponseEntity<ResponseDto> createAccount(@RequestBody CustomerDto requestBody) {
-        accountService.createAccount(requestBody);
+    public ResponseEntity<ResponseDto> createAccount(@RequestBody String mobileNumber) {
+        accountService.createAccount(mobileNumber);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(new ResponseDto(AccountConstants.STATUS_201, AccountConstants.MESSAGE_201));
@@ -78,7 +78,7 @@ public class AccountController {
             )
     })
     @PutMapping("/update")
-    public ResponseEntity<ResponseDto> updateAccount(@RequestBody CustomerDto requestBody) {
+    public ResponseEntity<ResponseDto> updateAccount(@RequestBody AccountDto requestBody) {
         boolean isUpdated = accountService.updateAccount(requestBody);
         if (isUpdated) {
             return ResponseEntity
