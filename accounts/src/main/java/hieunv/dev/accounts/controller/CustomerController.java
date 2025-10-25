@@ -1,10 +1,10 @@
 package hieunv.dev.accounts.controller;
 
-import hieunv.dev.accounts.constants.AccountConstants;
 import hieunv.dev.accounts.constants.CustomerConstants;
 import hieunv.dev.accounts.dto.CustomerDetailsDto;
 import hieunv.dev.accounts.dto.CustomerDto;
 import hieunv.dev.accounts.dto.ErrorResponseDto;
+import hieunv.dev.accounts.dto.MobileNumberUpdate;
 import hieunv.dev.accounts.dto.ResponseDto;
 import hieunv.dev.accounts.service.impl.CustomerService;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -23,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -66,49 +67,55 @@ public class CustomerController {
         return ResponseEntity.status(HttpStatus.OK).body(cardsDto);
     }
 
-//    @GetMapping("/fetch")
-//    public ResponseEntity<CustomerDto> fetchCustomer(@RequestParam
-//                                                     @Pattern(regexp="(^$|[0-9]{10})",
-//                                                             message = "Mobile number must be 10 digits")
-//                                                     String mobileNumber) {
-//        CustomerDto customerDto = customerService.fetchCustomer(mobileNumber);
-//        return ResponseEntity
-//                .status(HttpStatus.OK)
-//                .body(customerDto);
-//    }
+    @GetMapping("/fetch")
+    public ResponseEntity<CustomerDto> fetchCustomer(@RequestParam
+                                                     @Pattern(regexp="(^$|[0-9]{10})",
+                                                             message = "Mobile number must be 10 digits")
+                                                     String mobileNumber) {
+        CustomerDto customerDto = customerService.fetchCustomer(mobileNumber);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(customerDto);
+    }
 
-//    @PostMapping("/create")
-//    public ResponseEntity<ResponseDto> createCustomer(@Valid @RequestBody CustomerDto customerDto) {
-//        customerService.createCustomer(customerDto);
-//        return ResponseEntity
-//                .status(HttpStatus.CREATED)
-//                .body(new ResponseDto(CustomerConstants.STATUS_201, CustomerConstants.MESSAGE_201));
-//    }
-//
-//    @PostMapping("/update")
-//    public ResponseEntity<ResponseDto> updateCustomer(@Valid @RequestBody CustomerDto customerDto) {
-//        boolean isUpdated = customerService.updateCustomer(customerDto);
-//        if (isUpdated) {
-//            return ResponseEntity
-//                    .status(HttpStatus.OK)
-//                    .body(new ResponseDto(CustomerConstants.STATUS_200, CustomerConstants.MESSAGE_200));
-//        } else {
-//            return ResponseEntity
-//                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body(new ResponseDto(CustomerConstants.STATUS_500, CustomerConstants.MESSAGE_500_UPDATE));
-//        }
-//    }
-//
-//    @DeleteMapping("/delete")
-//    public ResponseEntity<ResponseDto> deleteCustomer(@RequestParam("customerId") Long customerId) {
-//        boolean isDeleted = customerService.deleteCustomer(customerId);
-//        if (isDeleted) {
-//            return ResponseEntity
-//                    .status(HttpStatus.OK)
-//                    .body(new ResponseDto(CustomerConstants.STATUS_200, CustomerConstants.MESSAGE_200));
-//        } else {
-//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-//                    .body(new ResponseDto(CustomerConstants.STATUS_500, CustomerConstants.MESSAGE_500_DELETE));
-//        }
-//    }
+    @PostMapping("/create")
+    public ResponseEntity<ResponseDto> createCustomer(@Valid @RequestBody CustomerDto customerDto) {
+        customerService.createCustomer(customerDto);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(new ResponseDto(CustomerConstants.STATUS_201, CustomerConstants.MESSAGE_201));
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<ResponseDto> updateCustomer(@Valid @RequestBody CustomerDto customerDto) {
+        boolean isUpdated = customerService.updateCustomer(customerDto);
+        if (isUpdated) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ResponseDto(CustomerConstants.STATUS_200, CustomerConstants.MESSAGE_200));
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(CustomerConstants.STATUS_500, CustomerConstants.MESSAGE_500_UPDATE));
+        }
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<ResponseDto> deleteCustomer(@RequestParam("customerId") Long customerId) {
+        boolean isDeleted = customerService.deleteCustomer(customerId);
+        if (isDeleted) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ResponseDto(CustomerConstants.STATUS_200, CustomerConstants.MESSAGE_200));
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(CustomerConstants.STATUS_500, CustomerConstants.MESSAGE_500_DELETE));
+        }
+    }
+
+    @PutMapping("/mobile-number")
+    public ResponseEntity<Boolean> updateMobileNumber(@RequestBody @Valid MobileNumberUpdate mobileNumberUpdate) {
+        boolean isUpdated = customerService.updateMobileNumber(mobileNumberUpdate);
+        return ResponseEntity.status(HttpStatus.OK).body(isUpdated);
+    }
 }

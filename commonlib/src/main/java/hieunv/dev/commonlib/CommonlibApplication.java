@@ -1,4 +1,4 @@
-package hieunv.dev.commonlib.dto;
+package hieunv.dev.commonlib;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 

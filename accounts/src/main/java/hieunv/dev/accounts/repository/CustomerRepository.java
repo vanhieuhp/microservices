@@ -13,5 +13,5 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     Optional<Customer> findByMobileNumberAndActiveSw(String mobileNumber, boolean activeSw);
 
-    Optional<Customer> findByIdAndActiveSw(Long customerId, boolean activeSw);
+    Optional<Customer> findByCustomerIdAndActiveSw(Long customerId, boolean activeSw);
 }

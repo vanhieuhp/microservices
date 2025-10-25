@@ -1,19 +1,17 @@
 package hieunv.dev.accounts.functions;
 
+import hieunv.dev.accounts.dto.MobileNumberUpdate;
 import hieunv.dev.accounts.service.impl.AccountService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 
+@Slf4j
 @Configuration
 public class AccountFunctions {
-
-    private static final Logger log = LoggerFactory.getLogger(AccountFunctions.class);
 
 //    @Bean
 //    public Function<Long, Long> updateCommunication(AccountService accountService) {
@@ -29,4 +27,19 @@ public class AccountFunctions {
 //            accountService.updateCommunication(accountNumber);
 //        };
 //    }
+
+    @Bean
+    public Consumer<MobileNumberUpdate> updateAccountMobileNumber(AccountService accountService) {
+        return (mobileNumberUpdate) -> {
+            log.info("Received updateAccountMobileNumber event: {}", mobileNumberUpdate);
+            accountService.updateMobileNumber(mobileNumberUpdate);
+        };
+    }
+
+    @Bean
+    public Consumer<MobileNumberUpdate> updateMobileNumberStatus() {
+        return (mobileNumberUpdate) -> {
+            log.info("Received updateCustomerMobileNumber event: {}", mobileNumberUpdate);
+        };
+    }
 }

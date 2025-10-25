@@ -22,6 +22,7 @@ public class LoansMapper {
         loans.setTotalLoan(loansDto.getTotalLoan());
         loans.setAmountPaid(loansDto.getAmountPaid());
         loans.setOutstandingAmount(loansDto.getOutstandingAmount());
+        // Note: activeSw is not included in DTO as it's managed by the service layer
         return loans;
     }
 

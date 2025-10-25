@@ -2,101 +2,114 @@ package hieunv.dev.accounts.service.impl;
 
 import hieunv.dev.accounts.constants.AccountConstants;
 import hieunv.dev.accounts.dto.AccountDto;
-import hieunv.dev.accounts.dto.AccountMsgDto;
+import hieunv.dev.accounts.dto.MobileNumberUpdate;
 import hieunv.dev.accounts.entity.Account;
-import hieunv.dev.accounts.entity.Customer;
+import hieunv.dev.accounts.exception.AccountAlreadyExistsException;
 import hieunv.dev.accounts.exception.ResourceNotFoundException;
 import hieunv.dev.accounts.mapper.AccountMapper;
 import hieunv.dev.accounts.repository.AccountRepository;
-import hieunv.dev.accounts.repository.CustomerRepository;
-import hieunv.dev.accounts.util.GeneratorUtils;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+import java.util.Random;
+
 @Service
 @Log4j2
+@RequiredArgsConstructor
 public class AccountServiceImpl implements AccountService {
 
-    private final AccountRepository accountRepository;
+    private final AccountRepository accountsRepository;
+    private final Random random = new Random();
     private final StreamBridge streamBridge;
 
-    public AccountServiceImpl(AccountRepository accountRepository, CustomerRepository customerRepository, StreamBridge streamBridge) {
-        this.accountRepository = accountRepository;
-        this.streamBridge = streamBridge;
+    /**
+     * Generates a unique 12-digit account number
+     */
+    private Long generateAccountNumber() {
+        Long accountNumber;
+        do {
+            // Generate a 12-digit account number
+            accountNumber = 100000000000L + random.nextLong(900000000000L);
+        } while (accountsRepository.existsById(accountNumber));
+        return accountNumber;
     }
 
     @Override
-    public void createAccount(String mobileNumber) {
-        Account account = createNewAccount(mobileNumber);
-        accountRepository.save(account);
-        log.info("Account created successfully: {}", account);
-    }
-
-    private void sendCommunication(Account account, Customer customer) {
-        var accountMsgDto = new AccountMsgDto(customer.getEmail(), customer.getName(),
-                customer.getMobileNumber(), account.getAccountNumber());
-        log.info("Sending account created message to communication service: {}", accountMsgDto);
-        var result = streamBridge.send("sendCommunication-out-0", accountMsgDto);
-        log.info("Result of sending account created message to communication service: {}", result);
+    public AccountDto createAccount(Account account) {
+        Optional<Account> optionalAccount = accountsRepository.findByMobileNumberAndActiveSw(account.getMobileNumber(),
+                AccountConstants.ACTIVE_SW);
+        if (optionalAccount.isPresent()) {
+            throw new AccountAlreadyExistsException("Account already registered with given mobileNumber " + account.getMobileNumber());
+        }
+        
+        // Generate unique account number if not provided
+        if (account.getAccountNumber() == null) {
+            account.setAccountNumber(generateAccountNumber());
+        }
+        
+        account.setActiveSw(AccountConstants.ACTIVE_SW);
+        Account savedAccount = accountsRepository.save(account);
+        log.info("Account created successfully with accountNumber: {}", savedAccount.getAccountNumber());
+        
+        return AccountMapper.mapToAccountDto(savedAccount, new AccountDto());
     }
 
     @Override
     public AccountDto fetchAccount(String mobileNumber) {
-        Account account = accountRepository.findByMobileNumber(mobileNumber).orElseThrow(() ->
-                new ResourceNotFoundException("Account", "mobileNumber", mobileNumber)
-        );
-        return AccountMapper.mapToAccountDto(account, new AccountDto());
+        Account account = accountsRepository.findByMobileNumberAndActiveSw(mobileNumber, AccountConstants.ACTIVE_SW)
+                .orElseThrow(() -> new ResourceNotFoundException("Account", "mobileNumber", mobileNumber)
+                );
+        AccountDto accountDto = AccountMapper.mapToAccountDto(account, new AccountDto());
+        return accountDto;
+    }
+
+    @Override
+    public AccountDto fetchAccountById(Long accountNumber) {
+        Account account = accountsRepository.findByAccountNumberAndActiveSw(accountNumber, AccountConstants.ACTIVE_SW)
+                .orElseThrow(() -> new ResourceNotFoundException("Account", "accountNumber", accountNumber.toString()));
+        AccountDto accountDto = AccountMapper.mapToAccountDto(account, new AccountDto());
+        return accountDto;
     }
 
     @Override
     public boolean updateAccount(AccountDto accountDto) {
-        boolean isUpdated = false;
-        if (accountDto != null) {
-            Account account = accountRepository.findById(accountDto.getAccountNumber())
-                    .orElseThrow(
-                            () -> new ResourceNotFoundException("Account", "AccountNumber", accountDto.getAccountNumber().toString())
-                    );
-
-            AccountMapper.mapToAccount(accountDto, account);
-            accountRepository.save(account);
-            isUpdated = true;
-        }
-
-        return isUpdated;
-    }
-
-    @Override
-    public boolean deleteAccount(String mobileNumber) {
-        Account account = accountRepository.findByMobileNumber(mobileNumber).orElseThrow(() ->
-                new ResourceNotFoundException("Account", "mobileNumber", mobileNumber)
-        );
-        accountRepository.delete(account);
+        Account account = accountsRepository.findByAccountNumberAndActiveSw(accountDto.getAccountNumber(), AccountConstants.ACTIVE_SW)
+                .orElseThrow(() -> new ResourceNotFoundException("Account", "accountNumber", accountDto.getAccountNumber().toString()));
+        
+        AccountMapper.mapToAccount(accountDto, account);
+        accountsRepository.save(account);
+        log.info("Account updated successfully for accountNumber: {}", accountDto.getAccountNumber());
         return true;
     }
 
     @Override
-    public boolean updateCommunication(Long accountNumber) {
-        boolean isUpdated = false;
-//        if (accountNumber != null) {
-//            Account accounts = accountRepository.findById(accountNumber).orElseThrow(
-//                    () -> new ResourceNotFoundException("Account", "AccountNumber", accountNumber.toString())
-//            );
-//            accounts.setCommunicationSw(true);
-//            accountRepository.save(accounts);
-//            isUpdated = true;
-//        }
-        return isUpdated;
+    public boolean deleteAccount(Long accountNumber) {
+        Account account = accountsRepository.findById(accountNumber).orElseThrow(
+                () -> new ResourceNotFoundException("Account", "accountNumber", accountNumber.toString())
+        );
+        account.setActiveSw(AccountConstants.IN_ACTIVE_SW);
+        accountsRepository.save(account);
+
+        log.info("Account deleted successfully for accountNumber: {}", accountNumber);
+        return true;
     }
 
-    private Account createNewAccount(String mobileNumber) {
-        Account newAccount = new Account();
-        long randomAccNumber = GeneratorUtils.generateAccountNumber();
-        newAccount.setAccountNumber(randomAccNumber);
-        newAccount.setAccountType(AccountConstants.SAVINGS);
-        newAccount.setBranchAddress(AccountConstants.ADDRESS);
-        newAccount.setMobileNumber(mobileNumber);
-        newAccount.setActiveSw(true);
-        return newAccount;
+    @Override
+    public boolean updateMobileNumber(MobileNumberUpdate mobileNumberUpdate) {
+        Account account = accountsRepository.findByMobileNumberAndActiveSw(mobileNumberUpdate.getCurrentMobileNumber(), AccountConstants.ACTIVE_SW)
+                .orElseThrow(() -> new ResourceNotFoundException("Account", "mobileNumber", mobileNumberUpdate.getCurrentMobileNumber()));
+        account.setMobileNumber(mobileNumberUpdate.getNewMobileNumber());
+        accountsRepository.save(account);
+        updateCardMobileNumber(mobileNumberUpdate);
+        return true;
+    }
+
+    public void updateCardMobileNumber(MobileNumberUpdate mobileNumberUpdate) {
+        log.info("Sending updateCardMobileNumber request for the details: {}", mobileNumberUpdate);
+        var result = streamBridge.send("updateCardMobileNumber-out-0", mobileNumberUpdate);
+        log.info("Is the updateCardMobileNumber request sent successfully? : {}", result);
     }
 }

@@ -9,9 +9,9 @@ spring:
       server:
         native:
 #          search-locations: "classpath:/config"
-#          search-locations: "file:///D:/dev/microservices//config"
+          search-locations: "file:///D:/dev/microservices/infrastructure/config_properties"
 #          search-locations: "file:////home/hieunv/projects/microservices/infrastructure/config_properties"
-          search-locations: "file:///C:/Users/hieunv/Workspaces/Myself/Projects/microservices/infrastructure/config_properties"
+#          search-locations: "file:///C:/Users/hieunv/Workspaces/Myself/Projects/microservices/infrastructure/config_properties"
         git:
           uri: https://github.com/vanhieuhp/microservices.git
           default-label: "feature/springcloud"

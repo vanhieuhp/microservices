@@ -1,6 +1,6 @@
 package hieunv.dev.accounts;
 
-import hieunv.dev.accounts.dto.AccountsContactInfoDto;
+import hieunv.dev.accounts.dto.AccountContactInfoDto;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;
@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.info.License;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -45,13 +44,13 @@ import java.util.logging.Level;
         @ComponentScan("hieunv.dev.accounts.*"),
 })
 @EnableJpaRepositories({"hieunv.dev.accounts.repository"})
-@EntityScan({
-        "hieunv.dev.accounts.entity",
-        "org.axonframework.eventhandling.tokenstore.jpa",  // Axon JPA Token Store entities
-        "org.axonframework.modelling.saga.repository.jpa"  // Axon JPA Saga Store entities
-})
+//@EntityScan({
+//        "hieunv.dev.accounts.entity",
+//        "org.axonframework.eventhandling.tokenstore.jpa",  // Axon JPA Token Store entities
+//        "org.axonframework.modelling.saga.repository.jpa"  // Axon JPA Saga Store entities
+//})
 @EnableConfigurationProperties(value = {
-        AccountsContactInfoDto.class
+        AccountContactInfoDto.class
 })
 @EnableFeignClients(basePackages = {"hieunv.dev.accounts.service.client"})
 @EnableDiscoveryClient

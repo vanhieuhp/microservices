@@ -20,4 +20,6 @@ public class AccountConstants {
     public static final String MESSAGE_500 = "An error occurred. please try again or contact Dev team";
     public static final String STATUS_503 = "503";
     public static final String MESSAGE_503 = "Service unavailable";
+    public static final boolean ACTIVE_SW = true;
+    public static final boolean IN_ACTIVE_SW = false;
 }

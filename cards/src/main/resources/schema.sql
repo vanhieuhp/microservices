@@ -1,14 +1,14 @@
-CREATE TABLE IF NOT EXISTS `cards` (
-  `card_id` int NOT NULL AUTO_INCREMENT,
-  `mobile_number` varchar(15) NOT NULL,
-  `card_number` varchar(100) NOT NULL,
-  `card_type` varchar(100) NOT NULL,
-  `total_limit` int NOT NULL,
-  `amount_used` int NOT NULL,
-  `available_amount` int NOT NULL,
-  `created_at` date NOT NULL,
-  `created_by` varchar(20) NOT NULL,
-  `updated_at` date DEFAULT NULL,
-  `updated_by` varchar(20) DEFAULT NULL,
-  PRIMARY KEY (`card_id`)
-);
+CREATE TABLE IF NOT EXISTS cards
+(
+    card_number   BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT,
+    mobile_number VARCHAR(20)        NOT NULL,
+    card_type     VARCHAR(30)        NOT NULL,
+    total_limit   INT                NOT NULL,
+    amount_used   INT                NOT NULL,
+    available_amount INT             NOT NULL,
+    active_sw     BOOLEAN            NOT NULL DEFAULT FALSE,
+    created_at    DATETIME           NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_by    VARCHAR(50)        NOT NULL,
+    updated_at    DATETIME ON UPDATE CURRENT_TIMESTAMP,
+    updated_by    VARCHAR(50)
+) ENGINE = InnoDB;

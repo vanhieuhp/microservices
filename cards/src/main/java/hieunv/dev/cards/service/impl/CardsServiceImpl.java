@@ -8,85 +8,102 @@ import hieunv.dev.cards.exception.ResourceNotFoundException;
 import hieunv.dev.cards.mapper.CardsMapper;
 import hieunv.dev.cards.repository.CardsRepository;
 import hieunv.dev.cards.service.ICardsService;
+import hieunv.dev.commonlib.dto.MobileNumberUpdate;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.Random;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 public class CardsServiceImpl implements ICardsService {
 
     private CardsRepository cardsRepository;
-
+    private final Random random = new Random();
+    private final StreamBridge streamBridge;
     /**
-     * @param mobileNumber - Mobile Number of the Customer
+     * Generates a unique 16-digit card number
      */
+    private Long generateCardNumber() {
+        Long cardNumber;
+        do {
+            // Generate a 16-digit card number
+            cardNumber = 1000000000000000L + random.nextLong(9000000000000000L);
+        } while (cardsRepository.existsById(cardNumber));
+        return cardNumber;
+    }
+
     @Override
-    public void createCard(String mobileNumber) {
-        Optional<Cards> optionalCards= cardsRepository.findByMobileNumber(mobileNumber);
-        if(optionalCards.isPresent()){
-            throw new CardAlreadyExistsException("Card already registered with given mobileNumber "+mobileNumber);
+    public CardsDto createCard(Cards card) {
+        Optional<Cards> optionalCard = cardsRepository.findByMobileNumberAndActiveSw(card.getMobileNumber(),
+                CardsConstants.ACTIVE_SW);
+        if (optionalCard.isPresent()) {
+            throw new CardAlreadyExistsException("Card already registered with given mobileNumber " + card.getMobileNumber());
         }
-        cardsRepository.save(createNewCard(mobileNumber));
+
+        // Generate unique card number if not provided
+        if (card.getCardNumber() == null) {
+            card.setCardNumber(generateCardNumber());
+        }
+
+        card.setActiveSw(CardsConstants.ACTIVE_SW);
+        Cards savedCard = cardsRepository.save(card);
+        return CardsMapper.mapToCardsDto(savedCard, new CardsDto());
     }
 
-    /**
-     * @param mobileNumber - Mobile Number of the Customer
-     * @return the new card details
-     */
-    private Cards createNewCard(String mobileNumber) {
-        Cards newCard = new Cards();
-        long randomCardNumber = 100000000000L + new Random().nextInt(900000000);
-        newCard.setCardNumber(Long.toString(randomCardNumber));
-        newCard.setMobileNumber(mobileNumber);
-        newCard.setCardType(CardsConstants.CREDIT_CARD);
-        newCard.setTotalLimit(CardsConstants.NEW_CARD_LIMIT);
-        newCard.setAmountUsed(0);
-        newCard.setAvailableAmount(CardsConstants.NEW_CARD_LIMIT);
-        return newCard;
-    }
-
-    /**
-     *
-     * @param mobileNumber - Input mobile Number
-     * @return Card Details based on a given mobileNumber
-     */
     @Override
     public CardsDto fetchCard(String mobileNumber) {
-        Cards cards = cardsRepository.findByMobileNumber(mobileNumber).orElseThrow(
-                () -> new ResourceNotFoundException("Card", "mobileNumber", mobileNumber)
-        );
-        return CardsMapper.mapToCardsDto(cards, new CardsDto());
+        Cards card = cardsRepository.findByMobileNumberAndActiveSw(mobileNumber, CardsConstants.ACTIVE_SW)
+                .orElseThrow(() -> new ResourceNotFoundException("Card", "mobileNumber", mobileNumber)
+                );
+        return CardsMapper.mapToCardsDto(card, new CardsDto());
     }
 
-    /**
-     *
-     * @param cardsDto - CardsDto Object
-     * @return boolean indicating if the update of card details is successful or not
-     */
+    @Override
+    public CardsDto fetchCardById(Long cardNumber) {
+        Cards card = cardsRepository.findByCardNumberAndActiveSw(cardNumber, CardsConstants.ACTIVE_SW)
+                .orElseThrow(() -> new ResourceNotFoundException("Card", "cardNumber", cardNumber.toString()));
+        return CardsMapper.mapToCardsDto(card, new CardsDto());
+    }
+
     @Override
     public boolean updateCard(CardsDto cardsDto) {
-        Cards cards = cardsRepository.findByCardNumber(cardsDto.getCardNumber()).orElseThrow(
-                () -> new ResourceNotFoundException("Card", "CardNumber", cardsDto.getCardNumber()));
-        CardsMapper.mapToCards(cardsDto, cards);
-        cardsRepository.save(cards);
-        return  true;
-    }
+        Cards card = cardsRepository.findByCardNumberAndActiveSw(cardsDto.getCardNumber(), CardsConstants.ACTIVE_SW)
+                .orElseThrow(() -> new ResourceNotFoundException("Card", "cardNumber", cardsDto.getCardNumber().toString()));
 
-    /**
-     * @param mobileNumber - Input MobileNumber
-     * @return boolean indicating if the delete of card details is successful or not
-     */
-    @Override
-    public boolean deleteCard(String mobileNumber) {
-        Cards cards = cardsRepository.findByMobileNumber(mobileNumber).orElseThrow(
-                () -> new ResourceNotFoundException("Card", "mobileNumber", mobileNumber)
-        );
-        cardsRepository.deleteById(cards.getCardId());
+        CardsMapper.mapToCards(cardsDto, card);
+        cardsRepository.save(card);
         return true;
     }
 
 
+    @Override
+    public boolean deleteCard(Long cardNumber) {
+        Cards card = cardsRepository.findById(cardNumber)
+                .orElseThrow(() -> new ResourceNotFoundException("Card", "cardNumber", cardNumber.toString())
+                );
+        card.setActiveSw(CardsConstants.IN_ACTIVE_SW);
+        cardsRepository.save(card);
+        return true;
+    }
+
+    @Override
+    public boolean updateMobileNumber(MobileNumberUpdate mobileNumberUpdate) {
+        Cards card = cardsRepository.findByMobileNumberAndActiveSw(mobileNumberUpdate.getCurrentMobileNumber(), CardsConstants.ACTIVE_SW)
+                .orElseThrow(() -> new ResourceNotFoundException("Card", "mobileNumber", mobileNumberUpdate.getCurrentMobileNumber()));
+        card.setMobileNumber(mobileNumberUpdate.getNewMobileNumber());
+        updateLoanMobileNumber(mobileNumberUpdate);
+        cardsRepository.save(card);
+        return true;
+    }
+
+    public void updateLoanMobileNumber(MobileNumberUpdate mobileNumberUpdate) {
+        log.info("Sending updateLoanMobileNumber request for the details: {}", mobileNumberUpdate);
+        var result = streamBridge.send("updateLoanMobileNumber-out-0", mobileNumberUpdate);
+        log.info("Is the updateLoanMobileNumber request sent successfully? : {}", result);
+    }
 }

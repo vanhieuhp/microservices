@@ -1,17 +1,11 @@
 package hieunv.dev.loans.controller;
 
 import hieunv.dev.loans.constants.LoansConstants;
-import hieunv.dev.loans.dto.ErrorResponseDto;
 import hieunv.dev.loans.dto.LoansContactInfoDto;
 import hieunv.dev.loans.dto.LoansDto;
 import hieunv.dev.loans.dto.ResponseDto;
+import hieunv.dev.loans.entity.Loans;
 import hieunv.dev.loans.service.ILoansService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
@@ -21,167 +15,96 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
-/**
- * @author Eazy Bytes
- */
-
-@Tag(
-        name = "CRUD REST APIs for Loans in EazyBank",
-        description = "CRUD REST APIs in EazyBank to CREATE, UPDATE, FETCH AND DELETE loan details"
-)
 @RestController
-@RequestMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
+@RequestMapping(produces = {MediaType.APPLICATION_JSON_VALUE}, value = "/loans")
 @AllArgsConstructor
 @Validated
 @Log4j2
 public class LoansController {
 
-    private ILoansService iLoansService;
+    @Autowired
+    private LoansContactInfoDto loansContactInfoDto;
+    
+    private final ILoansService loansService;
 
-    @Operation(
-            summary = "Create Loan REST API",
-            description = "REST API to create new loan inside EazyBank"
-    )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "201",
-                    description = "HTTP Status CREATED"
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "HTTP Status Internal Server Error",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDto.class)
-                    )
-            )
+    @GetMapping("/contact-info")
+    public ResponseEntity<LoansContactInfoDto> getContactInfo() {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(loansContactInfoDto);
     }
-    )
+
     @PostMapping("/create")
-    public ResponseEntity<ResponseDto> createLoan(@RequestParam
-                                                      @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
-                                                      String mobileNumber) {
-        iLoansService.createLoan(mobileNumber);
+    public ResponseEntity<LoansDto> createLoan(@Valid @RequestBody LoansDto loansDto) {
+        Loans loan = new Loans();
+        loan.setLoanNumber(loansDto.getLoanNumber()); // Will be generated if null
+        loan.setLoanType(loansDto.getLoanType());
+        loan.setMobileNumber(loansDto.getMobileNumber());
+        loan.setTotalLoan(loansDto.getTotalLoan());
+        loan.setAmountPaid(loansDto.getAmountPaid());
+        loan.setOutstandingAmount(loansDto.getOutstandingAmount());
+        
+        LoansDto createdLoan = loansService.createLoan(loan);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(new ResponseDto(LoansConstants.STATUS_201, LoansConstants.MESSAGE_201));
+                .body(createdLoan);
     }
 
-    @Operation(
-            summary = "Fetch Loan Details REST API",
-            description = "REST API to fetch loan details based on a mobile number"
-    )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "HTTP Status OK"
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "HTTP Status Internal Server Error",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDto.class)
-                    )
-            )
-    }
-    )
+
     @GetMapping("/fetch")
-    public ResponseEntity<LoansDto> fetchLoanDetails(@RequestParam
-                                                               @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
-                                                               String mobileNumber,
-                                                     @RequestHeader(name = "easybank-correlation-id") String correlationId) {
-        log.debug("fetchLoanDetails method start");
-        LoansDto loansDto = iLoansService.fetchLoan(mobileNumber);
-        log.debug("fetchLoanDetails method start");
-
-        return ResponseEntity.status(HttpStatus.OK).body(loansDto);
+    public ResponseEntity<LoansDto> fetchLoan(@RequestParam
+                                             @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
+                                             String mobileNumber) {
+        LoansDto loansDto = loansService.fetchLoan(mobileNumber);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(loansDto);
     }
 
-    @Operation(
-            summary = "Update Loan Details REST API",
-            description = "REST API to update loan details based on a loan number"
-    )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "HTTP Status OK"
-            ),
-            @ApiResponse(
-                    responseCode = "417",
-                    description = "Expectation Failed"
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "HTTP Status Internal Server Error",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDto.class)
-                    )
-            )
-        }
-    )
+    @GetMapping("/fetch/{loanNumber}")
+    public ResponseEntity<LoansDto> fetchLoanById(@PathVariable Long loanNumber) {
+        LoansDto loansDto = loansService.fetchLoanById(loanNumber);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(loansDto);
+    }
+
     @PutMapping("/update")
-    public ResponseEntity<ResponseDto> updateLoanDetails(@Valid @RequestBody LoansDto loansDto) {
-        boolean isUpdated = iLoansService.updateLoan(loansDto);
-        if(isUpdated) {
+    public ResponseEntity<ResponseDto> updateLoan(@Valid @RequestBody LoansDto loansDto) {
+        boolean isUpdated = loansService.updateLoan(loansDto);
+        if (isUpdated) {
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(new ResponseDto(LoansConstants.STATUS_200, LoansConstants.MESSAGE_200));
-        }else{
+        } else {
             return ResponseEntity
-                    .status(HttpStatus.EXPECTATION_FAILED)
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseDto(LoansConstants.STATUS_417, LoansConstants.MESSAGE_417_UPDATE));
         }
     }
 
-    @Operation(
-            summary = "Delete Loan Details REST API",
-            description = "REST API to delete Loan details based on a mobile number"
-    )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "HTTP Status OK"
-            ),
-            @ApiResponse(
-                    responseCode = "417",
-                    description = "Expectation Failed"
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "HTTP Status Internal Server Error",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDto.class)
-                    )
-            )
-    }
-    )
-    @DeleteMapping("/delete")
-    public ResponseEntity<ResponseDto> deleteLoanDetails(@RequestParam
-                                                                @Pattern(regexp="(^$|[0-9]{10})",message = "Mobile number must be 10 digits")
-                                                                String mobileNumber) {
-        boolean isDeleted = iLoansService.deleteLoan(mobileNumber);
-        if(isDeleted) {
+    @DeleteMapping("/delete/{loanNumber}")
+    public ResponseEntity<ResponseDto> deleteLoan(@PathVariable Long loanNumber) {
+        boolean isDeleted = loansService.deleteLoan(loanNumber);
+        if (isDeleted) {
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(new ResponseDto(LoansConstants.STATUS_200, LoansConstants.MESSAGE_200));
-        }else{
+        } else {
             return ResponseEntity
-                    .status(HttpStatus.EXPECTATION_FAILED)
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(new ResponseDto(LoansConstants.STATUS_417, LoansConstants.MESSAGE_417_DELETE));
         }
-    }
-
-    @Autowired
-    private LoansContactInfoDto loansContactInfoDto;
-
-    @GetMapping("/contact-info")
-    public ResponseEntity<LoansContactInfoDto> getContactInfo() {
-//        log.debug("Contact Info: {}", loansContactInfoDto);
-//        throw new RuntimeException("Error occur!");
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(loansContactInfoDto);
     }
 
 }

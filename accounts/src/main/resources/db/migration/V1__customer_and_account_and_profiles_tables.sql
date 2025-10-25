@@ -1,4 +1,4 @@
-CREATE TABLE IF NOT EXISTS  customer
+CREATE TABLE IF NOT EXISTS customer
 (
     customer_id   BIGINT PRIMARY KEY NOT NULL AUTO_INCREMENT,
     name          VARCHAR(100)       NOT NULL,
@@ -7,10 +7,11 @@ CREATE TABLE IF NOT EXISTS  customer
     active_sw     BOOLEAN            NOT NULL DEFAULT FALSE,
     created_at    DATETIME           NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by    VARCHAR(50)        NOT NULL,
-    updated_at    DATETIME ON UPDATE CURRENT_TIMESTAMP,
+    updated_at    DATETIME           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     updated_by    VARCHAR(50),
-    UNIQUE KEY uk_customer_email (email)
-) ENGINE = InnoDB;
+    UNIQUE KEY uk_customer_email (email),
+    INDEX idx_customer_mobile_number (mobile_number)
+    ) ENGINE = InnoDB;
 
 CREATE TABLE IF NOT EXISTS accounts
 (
@@ -21,9 +22,10 @@ CREATE TABLE IF NOT EXISTS accounts
     active_sw      BOOLEAN            NOT NULL DEFAULT FALSE,
     created_at     DATETIME           NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by     VARCHAR(50)        NOT NULL,
-    updated_at     DATETIME ON UPDATE CURRENT_TIMESTAMP,
+    updated_at     DATETIME           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     updated_by     VARCHAR(50),
-) ENGINE = InnoDB;
+    INDEX idx_accounts_mobile_number (mobile_number)
+    ) ENGINE = InnoDB;
 
 CREATE TABLE IF NOT EXISTS profile
 (
@@ -36,8 +38,12 @@ CREATE TABLE IF NOT EXISTS profile
     loan_number    BIGINT,
     created_at     DATETIME           NOT NULL DEFAULT CURRENT_TIMESTAMP,
     created_by     VARCHAR(50)        NOT NULL,
-    updated_at     DATETIME ON UPDATE CURRENT_TIMESTAMP,
+    updated_at     DATETIME           NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     updated_by     VARCHAR(50),
-    FOREIGN KEY (account_number) REFERENCES accounts (account_number)
-
-) ENGINE = InnoDB;
+    CONSTRAINT fk_profile_account
+    FOREIGN KEY (account_number) REFERENCES accounts (account_number),
+    INDEX idx_profile_mobile_number (mobile_number),
+    INDEX idx_profile_account_number (account_number),
+    INDEX idx_profile_card_number (card_number),
+    INDEX idx_profile_loan_number (loan_number)
+    ) ENGINE = InnoDB;

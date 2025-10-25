@@ -51,7 +51,16 @@ spring:
     username: "${RABBITMQ_USERNAME:guest}"
     password: "${RABBITMQ_PASSWORD:guest}"
     virtual-host: "${RABBITMQ_VIRTUAL_HOST:vh_host}"
-#  cloud:
+  cloud:
+    function:
+      definition: updateCardMobileNumber
+    stream:
+      bindings:
+        updateCardMobileNumber-in-0:
+          destination: update-card-mobile-number
+          group: "${spring.application.name}"
+        updateLoanMobileNumber-out-0:
+          destination: update-loan-mobile-number
 #    kubernetes:
 #      discovery:
 #        all-namespaces: true
@@ -59,7 +68,7 @@ spring:
 info:
   app:
     name: "cards"
-    description: "Easy Bank Accounts Application"
+    description: "Easy Bank Cards Application"
     version: "1.0.0"
 
 eureka:
@@ -70,7 +79,3 @@ eureka:
     registerWithEureka: true
     serviceUrl:
       defaultZone: "${EUREKA_SERVER_URL:http://localhost:8761/eureka/}"
-
-axon:
-  axonserver:
-    servers: localhost:8124

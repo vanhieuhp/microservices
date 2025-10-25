@@ -12,7 +12,7 @@ import java.util.Map;
 @AllArgsConstructor
 @NoArgsConstructor
 @ConfigurationProperties(prefix = "accounts")
-public class AccountsContactInfoDto {
+public class AccountContactInfoDto {
     private String message;
     private Map<String, String> contactDetails;
     private List<String> onCallSupport;

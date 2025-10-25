@@ -1,12 +1,12 @@
 package hieunv.dev.accounts.service.impl;
 
-import hieunv.dev.accounts.command.event.CustomerUpdatedEvent;
 import hieunv.dev.accounts.constants.CustomerConstants;
 import hieunv.dev.accounts.dto.AccountDto;
 import hieunv.dev.accounts.dto.CardsDto;
 import hieunv.dev.accounts.dto.CustomerDetailsDto;
 import hieunv.dev.accounts.dto.CustomerDto;
 import hieunv.dev.accounts.dto.LoansDto;
+import hieunv.dev.accounts.dto.MobileNumberUpdate;
 import hieunv.dev.accounts.entity.Account;
 import hieunv.dev.accounts.entity.Customer;
 import hieunv.dev.accounts.exception.ResourceNotFoundException;
@@ -19,6 +19,7 @@ import hieunv.dev.accounts.service.client.LoansFeignClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -33,6 +34,7 @@ public class CustomerServiceImpl implements CustomerService {
     private final CustomerRepository customerRepository;
     private final CardsFeignClient cardsFeignClient;
     private final LoansFeignClient loansFeignClient;
+    private final StreamBridge streamBridge;
 
     @Override
     public CustomerDetailsDto fetchCustomerDetails(String mobileNumber, String correlationId) {
@@ -81,20 +83,25 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void createCustomer(Customer customer) {
-        Optional<Customer> existingCustomer = customerRepository.findByMobileNumberAndActiveSw(customer.getMobileNumber(), CustomerConstants.ACTIVE_SW);
+    public void createCustomer(CustomerDto customerDto) {
+        Optional<Customer> existingCustomer = customerRepository.findByMobileNumberAndActiveSw(customerDto.getMobileNumber(), CustomerConstants.ACTIVE_SW);
         if (existingCustomer.isPresent()) {
-            throw new IllegalArgumentException("Customer with mobile number " + customer.getMobileNumber() + " already exists.");
+            throw new IllegalArgumentException("Customer with mobile number " + customerDto.getMobileNumber() + " already exists.");
         }
+        
+        Customer customer = new Customer();
+        CustomerMapper.mapToCustomer(customerDto, customer);
+        customer.setActiveSw(CustomerConstants.ACTIVE_SW);
         customerRepository.save(customer);
         log.info("Customer created successfully");
     }
 
     @Override
-    public boolean updateCustomer(CustomerUpdatedEvent customerUpdatedEvent) {
-        Customer customer = customerRepository.findByMobileNumberAndActiveSw(customerUpdatedEvent.getMobileNumber(), true)
-                .orElseThrow(() -> new ResourceNotFoundException("Customer", "customerId", customerUpdatedEvent.getCustomerId().toString()));
-        CustomerMapper.mapEventToCustomer(customerUpdatedEvent, customer);
+    public boolean updateCustomer(CustomerDto customerDto) {
+        Customer customer = customerRepository.findByMobileNumberAndActiveSw(customerDto.getMobileNumber(), CustomerConstants.ACTIVE_SW)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer", "mobileNumber", customerDto.getMobileNumber()));
+        
+        CustomerMapper.mapToCustomer(customerDto, customer);
         customerRepository.save(customer);
         log.info("Customer updated successfully");
         return true;
@@ -109,5 +116,22 @@ public class CustomerServiceImpl implements CustomerService {
         customerRepository.save(customer);
         log.info("Customer deleted successfully");
         return true;
+    }
+
+    @Override
+    public boolean updateMobileNumber(MobileNumberUpdate mobileNumberUpdate) {
+        Customer customer = customerRepository.findByMobileNumberAndActiveSw(mobileNumberUpdate.getCurrentMobileNumber(), CustomerConstants.ACTIVE_SW)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumberUpdate.getCurrentMobileNumber()));
+        customer.setMobileNumber(mobileNumberUpdate.getNewMobileNumber());
+        customerRepository.save(customer);
+        log.info("Customer mobile number updated successfully");
+        updateAccountMobileNumber(mobileNumberUpdate);
+        return true;
+    }
+
+    private void updateAccountMobileNumber(MobileNumberUpdate mobileNumberUpdate) {
+        log.info("Sending updateAccountMobileNumber request for the details: {}", mobileNumberUpdate);
+        var result = streamBridge.send("updateAccountMobileNumber-out-0", mobileNumberUpdate);
+        log.info("Is message sent successfully - {}", result);
     }
 }

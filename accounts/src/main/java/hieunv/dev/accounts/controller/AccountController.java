@@ -1,24 +1,22 @@
 package hieunv.dev.accounts.controller;
 
 import hieunv.dev.accounts.constants.AccountConstants;
+import hieunv.dev.accounts.dto.AccountContactInfoDto;
 import hieunv.dev.accounts.dto.AccountDto;
-import hieunv.dev.accounts.dto.AccountsContactInfoDto;
-import hieunv.dev.accounts.dto.CustomerDto;
-import hieunv.dev.accounts.dto.ErrorResponseDto;
 import hieunv.dev.accounts.dto.ResponseDto;
+import hieunv.dev.accounts.entity.Account;
 import hieunv.dev.accounts.service.impl.AccountService;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -38,81 +36,17 @@ import java.util.concurrent.TimeoutException;
 @Log4j2
 public class AccountController {
 
-    private AccountService accountService;
-
-    @Operation(
-            summary = "Create Account REST API",
-            description = "Create Account REST API in EasyBank to create new account for a customer"
-    )
-    @ApiResponse(
-            responseCode = "201",
-            description = "Account created successfully"
-    )
-    @PostMapping("/create")
-    public ResponseEntity<ResponseDto> createAccount(@RequestBody String mobileNumber) {
-        accountService.createAccount(mobileNumber);
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .body(new ResponseDto(AccountConstants.STATUS_201, AccountConstants.MESSAGE_201));
-    }
-
-    @GetMapping("/fetch")
-    public ResponseEntity<AccountDto> getAccount(@RequestParam String mobileNumber) {
-        AccountDto accountDto = accountService.fetchAccount(mobileNumber);
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .body(accountDto);
-    }
-
-    @ApiResponses(value = {
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "Account updated successfully"
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal server error",
-                    content = @Content(
-                            schema = @Schema(implementation = ErrorResponseDto.class)
-                    )
-            )
-    })
-    @PutMapping("/update")
-    public ResponseEntity<ResponseDto> updateAccount(@RequestBody AccountDto requestBody) {
-        boolean isUpdated = accountService.updateAccount(requestBody);
-        if (isUpdated) {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(new ResponseDto(AccountConstants.STATUS_200, AccountConstants.MESSAGE_200));
-        } else {
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(AccountConstants.STATUS_500, AccountConstants.MESSAGE_500));
-        }
-    }
-
-    @DeleteMapping("/delete")
-    public ResponseEntity<ResponseDto> deleteAccountDetails(@RequestParam String mobileNumber) {
-        boolean isDeleted = accountService.deleteAccount(mobileNumber);
-        if (isDeleted) {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(new ResponseDto(AccountConstants.STATUS_200, AccountConstants.MESSAGE_200));
-        } else {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ResponseDto(AccountConstants.STATUS_500, AccountConstants.MESSAGE_500));
-        }
-    }
-
     @Autowired
-    private AccountsContactInfoDto accountsContactInfoDto;
+    private AccountContactInfoDto accountContactInfoDto;
+    
+    private final AccountService accountService;
 
     @Retry(name = "getContactInfo", fallbackMethod = "getContactInfoFallback")
     @GetMapping("/contact-info")
-    public ResponseEntity<AccountsContactInfoDto> getContactInfo() throws TimeoutException {
+    public ResponseEntity<AccountContactInfoDto> getContactInfo() throws TimeoutException {
         return ResponseEntity
                 .status(HttpStatus.OK)
-                .body(accountsContactInfoDto);
+                .body(accountContactInfoDto);
 //        log.debug("Get Contact Info API invoked by client");
 //        throw new TimeoutException();
     }
@@ -136,5 +70,65 @@ public class AccountController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body("17");
+    }
+
+    @PostMapping("/create")
+    public ResponseEntity<AccountDto> createAccount(@Valid @RequestBody AccountDto accountDto) {
+        Account account = new Account();
+        account.setAccountNumber(accountDto.getAccountNumber()); // Will be generated if null
+        account.setAccountType(accountDto.getAccountType());
+        account.setBranchAddress(accountDto.getBranchAddress());
+        account.setMobileNumber(accountDto.getMobileNumber());
+        
+        AccountDto createdAccount = accountService.createAccount(account);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(createdAccount);
+    }
+
+    @GetMapping("/fetch")
+    public ResponseEntity<AccountDto> fetchAccount(@RequestParam
+                                                  @Pattern(regexp = "(^$|[0-9]{10})", message = "Mobile number must be 10 digits")
+                                                  String mobileNumber) {
+        AccountDto accountDto = accountService.fetchAccount(mobileNumber);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(accountDto);
+    }
+
+    @GetMapping("/fetch/{accountNumber}")
+    public ResponseEntity<AccountDto> fetchAccountById(@PathVariable Long accountNumber) {
+        AccountDto accountDto = accountService.fetchAccountById(accountNumber);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(accountDto);
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity<ResponseDto> updateAccount(@Valid @RequestBody AccountDto accountDto) {
+        boolean isUpdated = accountService.updateAccount(accountDto);
+        if (isUpdated) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ResponseDto(AccountConstants.STATUS_200, AccountConstants.MESSAGE_200));
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(AccountConstants.STATUS_500, AccountConstants.MESSAGE_500));
+        }
+    }
+
+    @DeleteMapping("/delete/{accountNumber}")
+    public ResponseEntity<ResponseDto> deleteAccount(@PathVariable Long accountNumber) {
+        boolean isDeleted = accountService.deleteAccount(accountNumber);
+        if (isDeleted) {
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(new ResponseDto(AccountConstants.STATUS_200, AccountConstants.MESSAGE_200));
+        } else {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ResponseDto(AccountConstants.STATUS_500, AccountConstants.MESSAGE_500));
+        }
     }
 }

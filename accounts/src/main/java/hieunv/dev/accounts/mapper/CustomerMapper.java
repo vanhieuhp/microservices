@@ -1,6 +1,5 @@
 package hieunv.dev.accounts.mapper;
 
-import hieunv.dev.accounts.command.event.CustomerUpdatedEvent;
 import hieunv.dev.accounts.dto.CustomerDetailsDto;
 import hieunv.dev.accounts.dto.CustomerDto;
 import hieunv.dev.accounts.entity.Customer;
@@ -25,12 +24,8 @@ public class CustomerMapper {
         customer.setName(customerDto.getName());
         customer.setEmail(customerDto.getEmail());
         customer.setMobileNumber(customerDto.getMobileNumber());
+        customer.setActiveSw(customerDto.isActiveSw());
         return customer;
     }
 
-    public static Customer mapEventToCustomer(CustomerUpdatedEvent event, Customer customer) {
-        customer.setName(event.getName());
-        customer.setEmail(event.getEmail());
-        return customer;
-    }
 }

@@ -1,4 +1,4 @@
-package hieunv.dev.accounts.util;
+package hieunv.dev.commonlib.util;
 
 import lombok.experimental.UtilityClass;
 

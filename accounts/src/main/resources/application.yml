@@ -29,7 +29,7 @@ spring:
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect # Use MySQL8Dialect if you're on MySQL 8.x
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     show-sql: false
     properties:
       hibernate:
@@ -59,7 +59,7 @@ spring:
       circuitbreaker:
         enabled: true
     function:
-      definition: updateCommunication
+      definition: updateAccountMobileNumber
     stream:
       bindings:
         updateCommunication-in-0:
@@ -67,6 +67,16 @@ spring:
           group: "${spring.application.name}"
         sendCommunication-out-0:
           destination: send-communication
+        updateAccountMobileNumber-out-0:
+          destination: update-account-mobile-number
+        updateAccountMobileNumber-in-0:
+          destination: update-account-mobile-number
+          group: "${spring.application.name}"
+        updateCardMobileNumber-out-0:
+          destination: update-card-mobile-number
+        updateMobileNumberStatus-in-0:
+          destination: update-mobile-number-status
+          group: "${spring.application.name}"
   logging:
     pattern:
       level: '%5p [${spring.application.name},%X{trace_id:-},%X{span_id:-},%threadName]'
@@ -122,20 +132,3 @@ resilience4j.ratelimiter:
         timeout-duration: 1000
         limit-refresh-period: 5000
         limit-for-period: 1
-
-axon:
-  axonserver:
-    servers: localhost:8124
-#  serializer:
-#    general: jackson
-#    events: jackson
-#    messages: jackson
-#  eventhandling:
-#    processors:
-#      # Configure default error handling and processing mode
-#      default:
-#        mode: tracking
-#        source: eventStore
-#  # Disable update checker to avoid the RejectedExecutionException
-  updates:
-    enabled: false

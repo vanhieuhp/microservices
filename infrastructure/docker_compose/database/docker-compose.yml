@@ -19,7 +19,7 @@ services:
       start_period: 10s
 
   mysql:
-    image: mysql:8.0-bookworm
+    image: mysql:9.5.0
     container_name: mysql
     restart: unless-stopped
     environment:
@@ -27,6 +27,7 @@ services:
       MYSQL_DATABASE: microservices
       MYSQL_USER: admin
       MYSQL_PASSWORD: password
+      MYSQL_ROOT_HOST: "%"
     ports:
     - "3306:3306"
     volumes:
