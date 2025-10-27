@@ -61,6 +61,8 @@ spring:
           group: "${spring.application.name}"
         updateMobileNumberStatus-out-0:
           destination: update-mobile-number-status
+        rollbackCardMobileNumber-out-0:
+          destination: rollback-card-mobile-number
 #    kubernetes:
 #      discovery:
 #        all-namespaces: true

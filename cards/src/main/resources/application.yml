@@ -31,7 +31,7 @@ spring:
     database-platform: org.hibernate.dialect.MySQL8Dialect # Use MySQL8Dialect if you're on MySQL 8.x
     hibernate:
       ddl-auto: none
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         format_sql: true
@@ -53,7 +53,7 @@ spring:
     virtual-host: "${RABBITMQ_VIRTUAL_HOST:vh_host}"
   cloud:
     function:
-      definition: updateCardMobileNumber
+      definition: updateCardMobileNumber;rollbackCardMobileNumber
     stream:
       bindings:
         updateCardMobileNumber-in-0:
@@ -61,6 +61,11 @@ spring:
           group: "${spring.application.name}"
         updateLoanMobileNumber-out-0:
           destination: update-loan-mobile-number
+        rollbackCardMobileNumber-in-0:
+          destination: rollback-card-mobile-number
+          group: "${spring.application.name}"
+        rollbackAccountMobileNumber-out-0:
+          destination: rollback-account-mobile-number
 #    kubernetes:
 #      discovery:
 #        all-namespaces: true

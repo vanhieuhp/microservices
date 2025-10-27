@@ -59,7 +59,7 @@ spring:
       circuitbreaker:
         enabled: true
     function:
-      definition: updateAccountMobileNumber
+      definition: updateAccountMobileNumber;updateMobileNumberStatus;rollbackCustomerMobileNumber;rollbackAccountMobileNumber
     stream:
       bindings:
         updateCommunication-in-0:
@@ -76,6 +76,14 @@ spring:
           destination: update-card-mobile-number
         updateMobileNumberStatus-in-0:
           destination: update-mobile-number-status
+          group: "${spring.application.name}"
+        rollbackCustomerMobileNumber-out-0:
+          destination: rollback-customer-mobile-number
+        rollbackCustomerMobileNumber-in-0:
+          destination: rollback-customer-mobile-number
+          group: "${spring.application.name}"
+        rollbackAccountMobileNumber-in-0:
+          destination: rollback-account-mobile-number
           group: "${spring.application.name}"
   logging:
     pattern:

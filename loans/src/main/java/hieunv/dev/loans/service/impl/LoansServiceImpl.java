@@ -9,10 +9,12 @@ import hieunv.dev.loans.exception.ResourceNotFoundException;
 import hieunv.dev.loans.mapper.LoansMapper;
 import hieunv.dev.loans.repository.LoansRepository;
 import hieunv.dev.loans.service.ILoansService;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
 import java.util.Optional;
 import java.util.Random;
@@ -90,14 +92,31 @@ public class LoansServiceImpl implements ILoansService {
         return true;
     }
 
+    @Transactional
     @Override
     public boolean updateLoanMobileNumber(MobileNumberUpdate mobileNumberUpdate) {
-        Loans loan = loansRepository.findByMobileNumberAndActiveSw(mobileNumberUpdate.getCurrentMobileNumber(), LoansConstants.ACTIVE_SW)
-                .orElseThrow(() -> new ResourceNotFoundException("Loan", "mobileNumber", mobileNumberUpdate.getCurrentMobileNumber()));
-        loan.setMobileNumber(mobileNumberUpdate.getNewMobileNumber());
-        loansRepository.save(loan);
-        updateMobileNumberStatus(mobileNumberUpdate);
-        return true;
+        boolean result = false;
+        try {
+            Loans loan = loansRepository.findByMobileNumberAndActiveSw(mobileNumberUpdate.getCurrentMobileNumber(), LoansConstants.ACTIVE_SW)
+                    .orElseThrow(() -> new ResourceNotFoundException("Loan", "mobileNumber", mobileNumberUpdate.getCurrentMobileNumber()));
+            loan.setMobileNumber(mobileNumberUpdate.getNewMobileNumber());
+            loansRepository.save(loan);
+//            updateMobileNumberStatus(mobileNumberUpdate);
+//            result = true;
+            throw new RuntimeException("Some error occurred while updating loan mobile number");
+        } catch (Exception e) {
+            log.info("Exception occurred when updating loan mobile number: {}", e.getMessage());
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+            rollbackCardMobileNumber(mobileNumberUpdate);
+        }
+
+        return result;
+    }
+
+    public void rollbackCardMobileNumber(MobileNumberUpdate mobileNumberUpdate) {
+        log.info("Sending rollbackCardMobileNumber request for the details: {}", mobileNumberUpdate);
+        var result = streamBridge.send("rollbackCardMobileNumber-out-0", mobileNumberUpdate);
+        log.info("Is the rollbackCardMobileNumber request sent successfully? : {}", result);
     }
 
     public void updateMobileNumberStatus(MobileNumberUpdate mobileNumberUpdate) {

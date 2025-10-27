@@ -17,4 +17,6 @@ public interface ICardsService {
     boolean deleteCard(Long cardNumber);
 
     boolean updateMobileNumber(MobileNumberUpdate mobileNumberUpdate);
+
+    boolean rollbackCardMobileNumber(MobileNumberUpdate mobileNumberUpdate);
 }

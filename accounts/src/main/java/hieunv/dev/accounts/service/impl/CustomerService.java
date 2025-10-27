@@ -20,4 +20,6 @@ public interface CustomerService {
 
     boolean updateMobileNumber(MobileNumberUpdate mobileNumberUpdate);
 
+    boolean rollbackCustomerMobileNumber(MobileNumberUpdate mobileNumberUpdate);
+
 }

@@ -18,7 +18,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping(produces = {MediaType.APPLICATION_JSON_VALUE}, value = "/cards")
+@RequestMapping(produces = {MediaType.APPLICATION_JSON_VALUE})
 @AllArgsConstructor
 @Validated
 @Log4j2

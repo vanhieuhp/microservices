@@ -16,6 +16,7 @@ import hieunv.dev.accounts.repository.AccountRepository;
 import hieunv.dev.accounts.repository.CustomerRepository;
 import hieunv.dev.accounts.service.client.CardsFeignClient;
 import hieunv.dev.accounts.service.client.LoansFeignClient;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.BeanUtils;
@@ -88,7 +89,7 @@ public class CustomerServiceImpl implements CustomerService {
         if (existingCustomer.isPresent()) {
             throw new IllegalArgumentException("Customer with mobile number " + customerDto.getMobileNumber() + " already exists.");
         }
-        
+
         Customer customer = new Customer();
         CustomerMapper.mapToCustomer(customerDto, customer);
         customer.setActiveSw(CustomerConstants.ACTIVE_SW);
@@ -100,7 +101,7 @@ public class CustomerServiceImpl implements CustomerService {
     public boolean updateCustomer(CustomerDto customerDto) {
         Customer customer = customerRepository.findByMobileNumberAndActiveSw(customerDto.getMobileNumber(), CustomerConstants.ACTIVE_SW)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer", "mobileNumber", customerDto.getMobileNumber()));
-        
+
         CustomerMapper.mapToCustomer(customerDto, customer);
         customerRepository.save(customer);
         log.info("Customer updated successfully");
@@ -119,6 +120,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
+    @Transactional
     public boolean updateMobileNumber(MobileNumberUpdate mobileNumberUpdate) {
         Customer customer = customerRepository.findByMobileNumberAndActiveSw(mobileNumberUpdate.getCurrentMobileNumber(), CustomerConstants.ACTIVE_SW)
                 .orElseThrow(() -> new ResourceNotFoundException("Customer", "mobileNumber", mobileNumberUpdate.getCurrentMobileNumber()));
@@ -126,6 +128,16 @@ public class CustomerServiceImpl implements CustomerService {
         customerRepository.save(customer);
         log.info("Customer mobile number updated successfully");
         updateAccountMobileNumber(mobileNumberUpdate);
+        return true;
+    }
+
+    @Override
+    public boolean rollbackCustomerMobileNumber(MobileNumberUpdate mobileNumberUpdate) {
+        String newMobileNumber = mobileNumberUpdate.getNewMobileNumber();
+        Customer customer = customerRepository.findByMobileNumberAndActiveSw(newMobileNumber, CustomerConstants.ACTIVE_SW)
+                .orElseThrow(() -> new ResourceNotFoundException("Customer", "mobileNumber", newMobileNumber));
+        customer.setMobileNumber(mobileNumberUpdate.getCurrentMobileNumber());
+        customerRepository.save(customer);
         return true;
     }
 
